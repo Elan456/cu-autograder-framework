@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+cd /autograder/source
+
+python3 run_tests.py
