@@ -4,15 +4,15 @@ that can contribute to the student's score.
 """
 
 import unittest  # Python's unit testing library
-import os  #  For moving files looking inside of folders
-import subprocess  #  For running executables and saving their stdout
+import os  # For moving files looking inside of folders
+import subprocess  # For running executables and saving their stdout
+import utils
 
 # All of Gradescope's special decorators to modify how the tests are weighted and displayed
 from gradescope_utils.autograder_utils.decorators import visibility, weight, number, leaderboard
 
 
-class test01_setup(unittest.TestCase):
-
+class Test01Setup(unittest.TestCase):
     # Files that must be in their submission
     # They will fail the first test case if they don't have these files
     required_files = []
@@ -24,12 +24,12 @@ class test01_setup(unittest.TestCase):
     # If a submitted file is not a required or optional file, then 
     # they will fail the first test case 
 
+    # Loading in all the drivers
 
-    @number("0") # Does not affect execution order 
+    @number("0")  # Does not affect execution order
     @weight(0)
     def test_checkFiles(self):
         """Expected files are present"""
 
         # Checking if the required files all exist
-
-
+        utils.check_and_get_files(self.required_files, self.optional_files)
