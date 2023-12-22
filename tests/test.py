@@ -21,6 +21,9 @@ class test01_setup(unittest.TestCase):
     # copied over. These could be extra credit files
     optional_files = []
 
+    # If a submitted file is not a required or optional file, then 
+    # they will fail the first test case 
+
 
     @number("0") # Does not affect execution order 
     @weight(0)
