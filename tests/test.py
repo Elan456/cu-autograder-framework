@@ -93,3 +93,58 @@ class Test01Setup(unittest.TestCase):
 
         if not_found_message != "":
             raise AssertionError(not_found_message)
+
+
+class Test02FunctionalityExample(unittest.TestCase):
+    def setUp(self):
+        # This is run before every test case in this class
+        # You can use this to run the drivers on the student's code
+        # and save the results to self.submission
+
+        compile_errors, self.submission = utils.driver_running.compile_and_run(
+            [
+                "g++",
+                "exampleDriver.cpp",
+                "studentCodeHeader.h",
+                "-o",
+                "exampleDriver.out",
+            ],
+            "exampleDriver.out",
+        )
+
+        # If there are compilation errors, then you can fail all the test cases
+        # within this class
+        name_of_functions_being_tested = "example functions"
+        if compile_errors != "":
+            # This could also be a good place to provide the desired function
+            # signatures to the student
+            raise AssertionError(
+                "Failed to compile a driver to test "
+                f"{name_of_functions_being_tested}. "
+                "Make sure you match the function signatures"
+                " given in the directions"
+            )
+
+        # Checking that the end of the testing script was reached
+        if "Case finished pass" not in self.submission.output:
+            # Only printing rather than raising an exception because
+            # they could still get points for the test cases that did run
+            print(
+                "The testing driver did not finish. This is usually caused by"
+                "either an infinite loop or a segmentation fault. Some of the"
+                "later test cases may not have run."
+            )
+
+    @number("1.1")
+    @weight(1)
+    def testSimpleExample(self):
+        """Simple example test case"""  # <- The name that will be shown
+
+        expected_outputs = ["Case 3+3=6 pass"]
+
+        for i, expected_output in enumerate(expected_outputs):
+            if expected_output not in self.submission.output:
+                raise AssertionError(
+                    "Code failed to add two single digit positive numbers "
+                    "together correctly. "
+                )
