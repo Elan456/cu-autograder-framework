@@ -25,6 +25,7 @@ int main (){
 
   // Outputting a note that the all the test finished
   // If this case isn't detected in stdout, then either a
-  // segmentation fault or infinite loop has occurred
-  caseOutput("reached end of tests", true);
+  // segmentation fault or infinite loop has occurred from the earlier function
+  // calls
+  caseOutput("finished", true);
 }

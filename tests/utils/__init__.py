@@ -8,7 +8,13 @@ the rest of the tests
 """
 
 from file_checking import check_and_get_files
-from driver_running import run_program, Submission
+from driver_running import run_program, Submission, compile_and_run
 from common import subprocess_run
 
-__all__ = [check_and_get_files, run_program, Submission, subprocess_run]
+__all__ = [
+    check_and_get_files,
+    run_program,
+    Submission,
+    subprocess_run,
+    compile_and_run,
+]
