@@ -154,7 +154,6 @@ class ProgressBar(JupyterMixin):
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-
         width = min(self.width or options.max_width, options.max_width)
         ascii = options.legacy_windows or options.ascii_only
         if self.pulse:
