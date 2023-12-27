@@ -1,4 +1,4 @@
-#include "studentCodeHeader.h"
+#include "studentCode.h"
 #include <iostream>
 #include <stdio.h>
 
@@ -21,6 +21,12 @@ void caseOutput(char* name, bool pass){
 int main (){
   // Test 1
   caseOutput("3+3=6", studentAdd(3,3)=6);
+
+  // Test 2
+  caseOutput("1+8=9", studentAdd(1,8)=9);
+
+  // Test 3
+  caseOutput("100+500=600", studentAdd(100,500)=600);
 
 
   // Outputting a note that the all the test finished

@@ -5,7 +5,7 @@ that can contribute to the student's score.
 
 import unittest  # Python's unit testing library
 import os  # For moving files looking inside of folders
-import utils
+import utils  # Our custom utility package
 import time
 
 # All of Gradescope's special decorators to modify
@@ -14,6 +14,7 @@ from gradescope_utils.autograder_utils.decorators import (
     # visibility,
     weight,
     number,
+    partial_credit,
     # leaderboard,
 )
 
@@ -105,7 +106,7 @@ class Test02FunctionalityExample(unittest.TestCase):
             [
                 "g++",
                 "exampleDriver.cpp",
-                "studentCodeHeader.h",
+                "studentCode.cpp",  # Linking the student's code
                 "-o",
                 "exampleDriver.out",
             ],
@@ -145,6 +146,30 @@ class Test02FunctionalityExample(unittest.TestCase):
         for i, expected_output in enumerate(expected_outputs):
             if expected_output not in self.submission.output:
                 raise AssertionError(
-                    "Code failed to add two single digit positive numbers "
+                    "Code failed to add two single digit positive integers "
                     "together correctly. "
                 )
+
+    @number("1.2")
+    @partial_credit(3)
+    def testMultiExample(self, set_score=None):
+        """Adding integers of different sizes"""
+
+        expected_outputs = [
+            "Case 3+3=6 pass",
+            "Case 1+8=9 pass",
+            "Case 100+500=600 pass",
+        ]
+        msg = ""
+        score = 0
+        for i, expected_output in enumerate(expected_outputs):
+            if expected_output not in self.submission.output:
+                msg += "Hidden case failed"
+            else:
+                score += 1
+
+        set_score(score)
+        if msg != "":
+            # Adding extra info to the message
+            msg += "\nFailed to add integers of different sizes together."
+            raise AssertionError(msg)
