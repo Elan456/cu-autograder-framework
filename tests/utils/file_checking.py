@@ -21,6 +21,20 @@ def check_and_get_files(
                                 an unexpected file is found
     """
 
+    # Copying the files into the source directory from the submission directory
+    # All the files are copied in a flat manner (no folders)
+    for root, _, files in os.walk(common.SUBMISSION_DIR):
+        for file in files:
+            if (
+                file in required_files
+                or file in optional_files
+                or not files_must_be_expected
+            ):
+                shutil.copy(os.path.join(root, file), common.SOURCE_DIR)
+
+    # Everything onwards is checking that the correct files were given
+    # and rasing an exception if they were not
+
     # The files may be within a folder, so os.walk is used to find them
     submitted_files_names = []
     for root, dirs, files in os.walk(common.SUBMISSION_DIR):
@@ -55,9 +69,3 @@ def check_and_get_files(
             "The following files were not asked for: "
             + " ".join(unexpected_files)
         )
-
-    # Copying the files into the source directory from the submission directory
-    # All the files are copied in a flat manner (no folders)
-    for root, _, files in os.walk(common.SUBMISSION_DIR):
-        for file in files:
-            shutil.copy(os.path.join(root, file), common.SOURCE_DIR)
