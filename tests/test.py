@@ -46,7 +46,9 @@ class Test01Setup(unittest.TestCase):
         # Copying all the files from the drivers folder into
         # the source directory, so we can use them to test the
         # student's code later
-        os.system("cp -r drivers/* source/")
+
+        # When the autograder is used, the cwd is the source directory
+        os.system("cp -r tests/drivers/* .")
 
         time.sleep(1)  # Gives a moment for the files to be moved over
         # and recognized by the system
@@ -115,13 +117,13 @@ class Test02FunctionalityExample(unittest.TestCase):
 
         # If there are compilation errors, then you can fail all the test cases
         # within this class
-        name_of_functions_being_tested = "example functions"
+        signatures_of_functiones_being_tested = "void example(char *)"
         if compile_errors != "":
             # This could also be a good place to provide the desired function
             # signatures to the student
             raise AssertionError(
                 "Failed to compile a driver to test "
-                f"{name_of_functions_being_tested}. "
+                f"{signatures_of_functiones_being_tested}. "
                 "Make sure you match the function signatures"
                 " given in the directions"
             )
@@ -133,7 +135,7 @@ class Test02FunctionalityExample(unittest.TestCase):
             print(
                 "The testing driver did not finish. This is usually caused by"
                 "either an infinite loop or a segmentation fault. Some of the"
-                "later test cases may not have run."
+                "later test cases in this group may not have run."
             )
 
     @number("1.1")
