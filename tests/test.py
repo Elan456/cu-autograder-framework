@@ -35,7 +35,7 @@ class Test01Setup(unittest.TestCase):
 
     @number("0.1")  # Does not affect execution order
     @weight(0)
-    def test_checkFiles(self):
+    def test_01_checkFiles(self):
         """Expected files are present"""
 
         # Checking if the required files all exist and
@@ -55,7 +55,7 @@ class Test01Setup(unittest.TestCase):
 
     @number("0.2")
     @weight(0)
-    def test_checkCompile(self):
+    def test_02_checkCompile(self):
         """Main program compiles"""
 
         # Tries to compile the student's main program
