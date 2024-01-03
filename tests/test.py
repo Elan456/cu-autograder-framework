@@ -33,6 +33,12 @@ class Test01Setup(unittest.TestCase):
     # This helps reduce the number of extra files submitted by the student,
     # making it easier for the TAs to grade the correct files later
 
+    # Copying all the files from the drivers folder into
+    # the source directory, so we can use them to test the
+    # student's code later
+    # When the autograder is used, the cwd is the source directory
+    os.system("cp -r tests/drivers/* .")
+
     @number("0.1")  # Does not affect execution order
     @weight(0)
     def test_01_checkFiles(self):
@@ -42,13 +48,6 @@ class Test01Setup(unittest.TestCase):
         # no unexpected files were given
         # Moves the files into the source directory as well
         utils.check_and_get_files(self.required_files, self.optional_files)
-
-        # Copying all the files from the drivers folder into
-        # the source directory, so we can use them to test the
-        # student's code later
-
-        # When the autograder is used, the cwd is the source directory
-        os.system("cp -r tests/drivers/* .")
 
         time.sleep(1)  # Gives a moment for the files to be moved over
         # and recognized by the system
