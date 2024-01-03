@@ -4,7 +4,7 @@ This file contains functions that are used to check the files in the submission
 
 import os
 import shutil
-import common
+import utils.common as common
 
 
 def check_and_get_files(

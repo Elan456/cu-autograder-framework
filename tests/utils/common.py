@@ -5,7 +5,7 @@ the utility modules
 
 import subprocess
 
-SOURCE_DIR = "/autograder/source"
+SOURCE_DIR = "/autograder/source"  # This is also the cwd for the autograder
 SUBMISSION_DIR = "/autograder/submission"
 
 

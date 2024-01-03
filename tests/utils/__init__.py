@@ -7,9 +7,9 @@ The below import statements are used to expose the functions in this module to
 the rest of the tests
 """
 
-from file_checking import check_and_get_files
-from driver_running import run_program, Submission, compile_and_run
-from common import subprocess_run
+from utils.file_checking import check_and_get_files
+from utils.driver_running import run_program, Submission, compile_and_run
+from utils.common import subprocess_run
 
 __all__ = [
     check_and_get_files,

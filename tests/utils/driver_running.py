@@ -6,7 +6,7 @@ and return the results
 import subprocess
 import time
 import os
-import common
+import utils.common as common
 
 
 # Class used to represent the result of a student's submission
