@@ -103,7 +103,7 @@ class Test02FunctionalityExample(unittest.TestCase):
         # You can use this to run the drivers on the student's code
         # and save the results to self.submission
 
-        compile_errors, self.submission = utils.driver_running.compile_and_run(
+        compile_errors, self.submission = utils.compile_and_run(
             [
                 "g++",
                 "exampleDriver.cpp",
@@ -118,6 +118,16 @@ class Test02FunctionalityExample(unittest.TestCase):
         # within this class
         signatures_of_functiones_being_tested = "void example(char *)"
         if compile_errors != "":
+            # Printing the details of the compiler errors such that only TAs
+            # and instructors can easily view it. If this driver has hidden
+            # tests, then you shouldn't show the compiler errors directly to
+            # the student
+            utils.ta_print(
+                "Compile errors for "
+                f"{signatures_of_functiones_being_tested}: "
+                f"{compile_errors}"
+            )
+
             # This could also be a good place to provide the desired function
             # signatures to the student
             raise AssertionError(
@@ -151,6 +161,8 @@ class Test02FunctionalityExample(unittest.TestCase):
                     "together correctly. "
                 )
 
+    # Partial credit docs:
+    # https://github.com/gradescope/gradescope-utils/blob/0e642eff3bbc9bc86a7c2b9b9677f4c491d76beb/gradescope_utils/autograder_utils/decorators.py#L120C7-L120C21
     @number("1.2")
     @partial_credit(3)
     def testMultiExample(self, set_score=None):

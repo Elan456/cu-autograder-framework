@@ -9,6 +9,19 @@ SOURCE_DIR = "/autograder/source"  # This is also the cwd for the autograder
 SUBMISSION_DIR = "/autograder/submission"
 
 
+def ta_print(message: str) -> None:
+    """
+    Saves the message to a file to be read and printed by the autograder later
+    If it's printed directly then it will be captured and shown with a test
+    case for students to see instead.
+
+    This output will be shown only to TAs and not to students
+    """
+
+    with open("/autograder/source/tests/ta_print.txt", "a") as ta_print_file:
+        ta_print_file.write(message + "\n")
+
+
 def subprocess_run(args: list[str]) -> tuple[str, str]:
     """
     Runs the given arguments in a subprocess and returns the output and errors
