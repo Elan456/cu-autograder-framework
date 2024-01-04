@@ -143,8 +143,8 @@ class Test02FunctionalityExample(unittest.TestCase):
             # they could still get points for the test cases that did run
             print(
                 "The testing driver did not finish. This is usually caused by"
-                "either an infinite loop or a segmentation fault. Some of the"
-                "later test cases in this group may not have run."
+                " either an infinite loop or a segmentation fault. Some of the"
+                " later test cases in this group may not have run."
             )
 
     @number("1.1")
