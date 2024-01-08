@@ -178,7 +178,7 @@ class Test02FunctionalityExample(unittest.TestCase):
         score = 0
         for i, expected_output in enumerate(expected_outputs):
             if expected_output not in self.submission.output:
-                msg += "Hidden case failed"
+                msg += "Hidden case failed\n"
             else:
                 score += 1
 
