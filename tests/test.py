@@ -36,7 +36,8 @@ class Test01Setup(unittest.TestCase):
     # Copying all the files from the drivers folder into
     # the source directory, so we can use them to test the
     # student's code later
-    # When the autograder is used, the cwd is the source directory
+    # When the autograder is used, the cwd (i.e. the ".") is the
+    # source directory (/autograder/source/)
     os.system("cp -r tests/drivers/* .")
 
     @number("0.1")  # Does not affect execution order
