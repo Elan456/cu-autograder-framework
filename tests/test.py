@@ -117,7 +117,7 @@ class Test02FunctionalityExample(unittest.TestCase):
 
         # If there are compilation errors, then you can fail all the test cases
         # within this class
-        signatures_of_functiones_being_tested = "void example(char *)"
+        signatures_of_functions_being_tested = "void example(char *)"
         if compile_errors != "":
             # Printing the details of the compiler errors such that only TAs
             # and instructors can easily view it. If this driver has hidden
@@ -125,7 +125,7 @@ class Test02FunctionalityExample(unittest.TestCase):
             # the student
             utils.ta_print(
                 "Compile errors for "
-                f"{signatures_of_functiones_being_tested}: "
+                f"{signatures_of_functions_being_tested}: "
                 f"{compile_errors}"
             )
 
@@ -133,7 +133,7 @@ class Test02FunctionalityExample(unittest.TestCase):
             # signatures to the student
             raise AssertionError(
                 "Failed to compile a driver to test "
-                f"{signatures_of_functiones_being_tested}. "
+                f"{signatures_of_functions_being_tested}. "
                 "Make sure you match the function signatures"
                 " given in the directions"
             )
