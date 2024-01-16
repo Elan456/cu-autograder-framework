@@ -3,8 +3,8 @@
 apt-get install -y python3 python3-pip python3-dev
 
 # Installs some English dictionaries 
-# These are needed for any word-based assignments like Cipher decoding 
-apt-get install -y wamerican wbritish
+# These are needed for the "words" file to exist 
+# apt-get install -y wamerican wbritish
 
 pip3 install -r /autograder/source/requirements.txt
 
