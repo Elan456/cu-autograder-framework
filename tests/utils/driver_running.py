@@ -35,7 +35,8 @@ def run_program(
     timeout: float = 0.1,
 ) -> Submission:
     """
-    Run the specified executable with given input and return its output
+    Run the specified executable as the student user with given input and
+    return its output
 
     executable - string containing the name of the executable to run.
 
@@ -120,9 +121,13 @@ def run_program(
 
 def remove_main(input_filename, output_filename):
     """
-    Removes main from the input file and writes the result to the output file
+    Removes main from the input C or C++ file and writes the result to the
+    output file
     This can be used to later test individual functions without dealing with
     multiple definitions of main.
+
+    This is a pretty janky approach and shouldn't be relied on much.
+    There are other ways using static functions to get around main
     """
     stack = []
     inside_main = False

@@ -13,3 +13,10 @@ In essence, when you import `utils`, you really import the `__init__.py` file
 which is meant to initialize the package. In this case, it imports all the
 helpful functions from the other modules so that you can use them as if they
 were all in the same file.
+
+Look in the `__init__.py` to see which functions are exposed
+externally and which modules those functions came from. 
+Each function's documentation is with its definition. 
+
+
+
