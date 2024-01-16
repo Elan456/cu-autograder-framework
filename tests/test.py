@@ -3,10 +3,10 @@ This is the primary testing file which will hold all the test cases
 that can contribute to the student's score.
 """
 
+import time
 import unittest  # Python's unit testing library
 import os  # For moving files looking inside of folders
 import utils  # Our custom utility package
-import time
 
 # All of Gradescope's special decorators to modify
 # how the tests are weighted and displayed
@@ -20,6 +20,11 @@ from gradescope_utils.autograder_utils.decorators import (
 
 
 class Test01Setup(unittest.TestCase):
+    """
+    Collection of test cases used to check and move files into the correct
+    location and compile the main executable.
+    """
+
     # Files that must be in their submission
     # They will fail the first test case if they don't have these files
     required_files = []
@@ -42,7 +47,7 @@ class Test01Setup(unittest.TestCase):
 
     @number("0.1")  # Does not affect execution order
     @weight(0)
-    def test_01_checkFiles(self):
+    def test_01_check_files(self):
         """Expected files are present"""
 
         # Checking if the required files all exist and
@@ -55,7 +60,7 @@ class Test01Setup(unittest.TestCase):
 
     @number("0.2")
     @weight(0)
-    def test_02_checkCompile(self):
+    def test_02_check_compile(self):
         """Main program compiles"""
 
         # Tries to compile the student's main program
@@ -64,7 +69,7 @@ class Test01Setup(unittest.TestCase):
         # wouldn't need to do this because you'll be compiling your
         # own drivers instead
 
-        output, errors = utils.subprocess_run(["make"])
+        _, errors = utils.subprocess_run(["make"], "student")
         # Other example:
         # output, errors = utils.subprocess_run(["g++", "main.cpp",
         #                       "object.cpp", "-Wall", "-o", "main.out"])
@@ -99,11 +104,19 @@ class Test01Setup(unittest.TestCase):
 
 
 class Test02FunctionalityExample(unittest.TestCase):
+    """
+    Collection of test cases to test functions called in
+    the exampleDriver.cpp file
+    """
+
     def setUp(self):
         # This is run before every test case in this class
         # You can use this to run the drivers on the student's code
-        # and save the results to self.submission
+        # and save the output and errors to self.submission which can be used
+        # throughout the class. Each test case can then look for different
+        # things within the output and award points accordingly.
 
+        # Compiling and running the testing driver on the student's code
         compile_errors, self.submission = utils.compile_and_run(
             [
                 "g++",
@@ -150,38 +163,57 @@ class Test02FunctionalityExample(unittest.TestCase):
 
     @number("1.1")
     @weight(1)
-    def testSimpleExample(self):
+    def test_simple_example(self):  # <- The word test is required in the name
         """Simple example test case"""  # <- The name that will be shown
 
         expected_outputs = ["Case 3+3=6 pass"]
+        msg = ""
 
+        # Checking that the expected output is in the student's output
         for i, expected_output in enumerate(expected_outputs):
             if expected_output not in self.submission.output:
-                raise AssertionError(
-                    "Code failed to add two single digit positive integers "
-                    "together correctly. "
-                )
+                # Giving a helpful error message to the student relevant to
+                # the outputs being checked
+                if i == 0:  # i is the index of the expected output
+                    # you could give different messages
+                    # for different indexes not found
+                    msg += (
+                        "Code failed to add two single digit positive"
+                        " integers together correctly. "
+                    )
 
     # Partial credit docs:
     # https://github.com/gradescope/gradescope-utils/blob/0e642eff3bbc9bc86a7c2b9b9677f4c491d76beb/gradescope_utils/autograder_utils/decorators.py#L120C7-L120C21
     @number("1.2")
     @partial_credit(3)
-    def testMultiExample(self, set_score=None):
+    def test_multi_example(self, set_score=None):
         """Adding integers of different sizes"""
 
+        # Looking for many outputs and giving partial credit for each one
+        # found. This strategy can be used to avoid having too many test cases
+        # on Gradescope.
         expected_outputs = [
             "Case 3+3=6 pass",
             "Case 1+8=9 pass",
             "Case 100+500=600 pass",
+            "Case 1+1=2 pass",
         ]
-        msg = ""
+        msg = ""  # Starting with a blank message to build on
         score = 0
         for i, expected_output in enumerate(expected_outputs):
             if expected_output not in self.submission.output:
-                msg += "Hidden case failed\n"
+                # The first two could be visible while
+                # the last two are hidden
+                if i < 2:
+                    # Giving details about what numbers were used
+                    msg += expected_output.split(" ")[1] + " failed\n"
+                else:
+                    # Not giving details about what numbers were used
+                    msg += "Hidden case failed\n"
             else:
                 score += 1
 
+        # The set_score function is passed in by Gradescope
         set_score(score)
         if msg != "":
             # Adding extra info to the message

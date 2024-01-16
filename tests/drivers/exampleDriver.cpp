@@ -16,7 +16,9 @@ void caseOutput(char* name, bool pass){
 }
 
 
-
+// Don't put too many tests in one file 
+// If one causes a seg fault or infinite loop, then the rest of the tests won't
+// be run
 int main (){
   // Test 1
   caseOutput("3+3=6", studentAdd(3,3)=6);
@@ -26,6 +28,9 @@ int main (){
 
   // Test 3
   caseOutput("100+500=600", studentAdd(100,500)=600);
+
+  // Test 4 
+  caseOutput("1+1=2", studentAdd(1,1)=2);
 
 
   // Outputting a note that the all the test finished

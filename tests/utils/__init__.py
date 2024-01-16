@@ -14,10 +14,10 @@ from utils.common import subprocess_run, ta_print
 # Adding the functions to __all__ so they can be imported with
 # from utils import *, and to make the linter happy
 __all__ = [
-    check_and_get_files,
-    run_program,
-    Submission,
-    subprocess_run,
-    compile_and_run,
-    ta_print,
+    "check_and_get_files",
+    "run_program",
+    "Submission",
+    "subprocess_run",
+    "compile_and_run",
+    "ta_print",
 ]

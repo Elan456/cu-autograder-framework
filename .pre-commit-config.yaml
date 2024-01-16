@@ -5,9 +5,24 @@ repos:
           - id: black
             language_version: python3.10
             args: [--line-length=79]
-      -   repo: https://github.com/pre-commit/pre-commit-hooks
-          rev: v2.0.0
-          hooks:
+      - repo: https://github.com/pre-commit/pre-commit-hooks
+        rev: v2.0.0
+        hooks:
           - id: flake8
+      - repo: https://github.com/pylint-dev/pylint
+        rev: v3.0.3
+        hooks:
+          - id: pylint
+            name: pylint
+            entry: pylint
+            language: system
+            types: [python]
+            args:
+              [
+                "-rn", # Only display messages
+                "-sn", # Don't display the score
+                "--output-format=colorized",
+                "-E"
+              ]
 
 exclude: ^venv/

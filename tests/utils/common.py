@@ -26,7 +26,7 @@ def ta_print(message: str) -> None:
     If it's printed directly then it will be captured and shown with a test
     case for students to see instead.
 
-    This output will be shown only to TAs and not to students
+    This output will be shown only to TAs and instructors; not to students
     """
 
     with open("/autograder/source/tests/ta_print.txt", "a") as ta_print_file:
@@ -50,6 +50,8 @@ def subprocess_run(
                         e.g. ["./formattingTest.out"]  -- To run an executable,
                          better to use run_program
     user -  The user to run the program as (e.g. "student" or "root")
+            Use "student" if you are running any code or file written
+            by the students. Use "root" only when compiling drivers.
     timeout - How long the program can run for in seconds
 
     """
