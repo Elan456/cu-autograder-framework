@@ -8,7 +8,12 @@ the rest of the tests
 """
 
 from utils.file_checking import check_and_get_files
-from utils.driver_running import run_program, Submission, compile_and_run
+from utils.driver_running import (
+    run_program,
+    Submission,
+    compile_and_run,
+    remove_main,
+)
 from utils.common import subprocess_run, ta_print
 
 # Adding the functions to __all__ so they can be imported with
@@ -20,4 +25,5 @@ __all__ = [
     "subprocess_run",
     "compile_and_run",
     "ta_print",
+    "remove_main",
 ]

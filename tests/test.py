@@ -68,7 +68,6 @@ class Test01Setup(unittest.TestCase):
         # If all you want to test is individual functions, then you
         # wouldn't need to do this because you'll be compiling your
         # own drivers instead
-
         _, errors = utils.subprocess_run(["make"], "student")
         # Other example:
         # output, errors = utils.subprocess_run(["g++", "main.cpp",
@@ -91,6 +90,7 @@ class Test01Setup(unittest.TestCase):
 
         # What files should be created when the student's makefile is run
         files_that_should_be_created = []
+
         not_found_message = ""
         for file in files_that_should_be_created:
             if not os.path.isfile(os.path.join(os.getcwd(), file)):
@@ -138,7 +138,7 @@ class Test02FunctionalityExample(unittest.TestCase):
             # the student
             utils.ta_print(
                 "Compile errors for "
-                f"{signatures_of_functions_being_tested}: "
+                f"`{signatures_of_functions_being_tested}`: "
                 f"{compile_errors}"
             )
 
@@ -146,7 +146,7 @@ class Test02FunctionalityExample(unittest.TestCase):
             # signatures to the student
             raise AssertionError(
                 "Failed to compile a driver to test "
-                f"{signatures_of_functions_being_tested}. "
+                f"`{signatures_of_functions_being_tested}`. "
                 "Make sure you match the function signatures"
                 " given in the directions"
             )
@@ -185,7 +185,7 @@ class Test02FunctionalityExample(unittest.TestCase):
     # Partial credit docs:
     # https://github.com/gradescope/gradescope-utils/blob/0e642eff3bbc9bc86a7c2b9b9677f4c491d76beb/gradescope_utils/autograder_utils/decorators.py#L120C7-L120C21
     @number("1.2")
-    @partial_credit(3)
+    @partial_credit(4)
     def test_multi_example(self, set_score=None):
         """Adding integers of different sizes"""
 
