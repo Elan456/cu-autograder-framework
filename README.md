@@ -1,5 +1,5 @@
 # Generic Autograder Framework
-Python based generic autograder framework for use with the 
+Python-based generic autograder framework for use with the 
 [Gradescope](https://gradescope.com) autograder.
 
 Originally based on the 
@@ -10,7 +10,7 @@ given by Gradescope.
 1. Either clone the repository or download the zip file and extract it.
 2. Edit the files and replace the examples with your own code.
    * Change `tests/drivers/exampleDriver.cpp` to your own driver or remove it.
-   * Remove and change the unit tests in `tests/tests.py`.
+   * Remove and change the unit tests in `tests/test.py`.
 3. Zip up the autograder (you can use the `ziper.sh` script).
 4. Upload the autograder to Gradescope (ideally in a private testing assignment).
 5. Run the autograder on a submission (sample code) and see if it works properly.
@@ -18,17 +18,17 @@ given by Gradescope.
 ## Files (and what they do)
 
 Even though many files are mentioned, the two things that must be changed are the 
-`test.py` folder and addding drivers to the `drivers` directory. 
+`test.py` folder and adding drivers to the `drivers` directory. 
 
 * `setup.sh` - Ran when the autograder docker image is built. This is where
   you should install any dependencies that your autograder needs and setup 
   users. You could compile code here, but it's easier to handle errors and 
-  display them nicely if you compile in the `tests.py` file. 
+  display them nicely if you compile in the `test.py` file. 
 * `run_autograder` - What Gradescope runs when the autograder is executed.
   This is typically used to start the Python test script. 
 * `run_tests.py` - Finds all the unit tests within the `tests` directory and
   runs them. It then logs the results to a `results.json` 
-  This shouldn't need to be changed.
+  This shouldn't need to be changed. Typically, it just runs `test.py`
 * `requirements.txt` - A list of Python packages that need to be installed
   for the autograder to run.  
 * `ziper.sh` - A small script that zips up the autograder for upload to 
@@ -36,9 +36,9 @@ Even though many files are mentioned, the two things that must be changed are th
 ### Tests directory
 * `drivers` - Where you can place all the files that are needed to run the tests 
   besides the student's code. For example, C drivers that test the functionality
-  of certain functions in the students code should be put here. 
+  of certain functions in the student's code should be put here. 
   Notice `exampleDriver.cpp` 
-* `tests.py` - The Python script which compiles, runs, and observes drivers and
+* `test.py` - The Python script which compiles, runs, and observes drivers and
   the student's code. Examples are given in the file.
 * `utils` - A Python package that contains our custom utilities for the autograder.
   This is where define functions that are used multiple times in the autograder.
