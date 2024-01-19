@@ -16,9 +16,14 @@ given by Gradescope.
 5. Run the autograder on a submission (sample code) and see if it works properly.
 
 ## Files (and what they do)
+
+Even though many files are mentioned, the two things that must be changed are the 
+`test.py` folder and addding drivers to the `drivers` directory. 
+
 * `setup.sh` - Ran when the autograder docker image is built. This is where
   you should install any dependencies that your autograder needs and setup 
-  users. 
+  users. You could compile code here, but it's easier to handle errors and 
+  display them nicely if you compile in the `tests.py` file. 
 * `run_autograder` - What Gradescope runs when the autograder is executed.
   This is typically used to start the Python test script. 
 * `run_tests.py` - Finds all the unit tests within the `tests` directory and
@@ -43,12 +48,20 @@ This framework wasn't made with security as the main focus; however, precautions
 were taken to prevent simple attacks such as students attempting to Tar the entire root
 and capture hidden test cases.
 
-Many of the utility functions in `utils` make use the "student" user who has 
+Many of the utility functions in `utils` make use of the "student" user who has 
 limited permissions. As long as student's code is not run as root, everything
 within the tests directory should be safe, but more testing is still needed.
 
 Be careful running student's makefiles without the "student" user 
 as they can be used to run arbitrary commands on the system.
+
+Security becomes important when there are more students because it becomes
+more difficult to find malicious submissions. 
+[Gradescope's best practices](https://gradescope-autograders.readthedocs.io/en/latest/best_practices/)
+mentions a few things to keep in mind. 
+For example, if you run the student's code as root while they have something 
+like [this](https://www.reddit.com/r/csMajors/comments/rlkf55/if_your_school_uses_gradescope_autograder_hidden/)
+set up, they'll find all your hidden test cases. 
 
 # Contributing
 
@@ -59,9 +72,13 @@ as they can be used to run arbitrary commands on the system.
 4. Commit your changes and modify files to satisfy the pre-commit hooks
 5. Create a pull request
 6. Wait for approval
-7. Merge your branch into master
+7. Merge your branch into main
 8. Delete your branch
 9. Celebrate!!
+
+## Getting Help 
+Feel free to email me at [ema8@clemson.edu](ema8@clemson.edu) or message me on
+Teams to ask specific questions or set up a time to meet.
 
 ## Issues
 If you find any issues, please report them on the issues page
