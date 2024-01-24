@@ -14,6 +14,9 @@ from utils.driver_running import (
     compile_and_run,
     remove_main,
 )
+from utils.stdout_checking import phrases_out_of_order, check_phrases
+
+
 from utils.common import subprocess_run, ta_print
 
 # Adding the functions to __all__ so they can be imported with
@@ -26,4 +29,6 @@ __all__ = [
     "compile_and_run",
     "ta_print",
     "remove_main",
+    "phrases_out_of_order",
+    "check_phrases",
 ]
