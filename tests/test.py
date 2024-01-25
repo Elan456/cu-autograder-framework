@@ -43,7 +43,7 @@ class Test01Setup(unittest.TestCase):
     # student's code later
     # When the autograder is used, the cwd (i.e. the ".") is the
     # source directory (/autograder/source/)
-    os.system("cp -r tests/drivers/* .")
+    os.system("cp -r tests/drivers/* .")  # <-- Remove if no drivers
 
     @number("0.1")  # Does not affect execution order
     @weight(0)

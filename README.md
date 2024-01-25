@@ -1,5 +1,7 @@
-# Generic Autograder Framework
-Python-based generic autograder framework for use with the 
+# Clemson-GPAF
+*Clemson Gradescope Python-based Autograder Framework*   
+
+Python-based generic output checking autograder framework for use with the 
 [Gradescope](https://gradescope.com) autograder.
 
 Originally based on the 
