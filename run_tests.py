@@ -22,4 +22,7 @@ if __name__ == "__main__":
     with open(
         "/autograder/source/tests/ta_print.txt", "r", encoding="utf-8"
     ) as f:
+        if f.read() != "":
+            print("TA Print:")
+            f.seek(0)
         print(f.read())
