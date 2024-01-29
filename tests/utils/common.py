@@ -9,32 +9,31 @@ import os
 SOURCE_DIR = "/autograder/source"  # This is also the cwd for the autograder
 SUBMISSION_DIR = "/autograder/submission"
 
-# Creating the ta_print.txt file
-with open("/autograder/source/tests/ta_print.txt", "w") as ta_print_file:
-    ta_print_file.write(
-        "Below is the output from the `ta_print` statements\n-----\n"
-    )
-
 # Removing read access from non-root users to ta_print.txt
 os.chmod("/autograder/source/tests/ta_print.txt", 0o600)  # 6 is rw for owner
-# which is root
 
 
-def ta_print(message: str) -> None:
+def ta_print(*args) -> None:
     """
     Saves the message to a file to be read and printed by the autograder later
     If it's printed directly then it will be captured and shown with a test
     case for students to see instead.
 
+    Use the same way as print()
+
     This output will be shown only to TAs and instructors; not to students
     """
+
+    message = ""
+    for arg in args:
+        message += str(arg) + " "
 
     with open("/autograder/source/tests/ta_print.txt", "a") as ta_print_file:
         ta_print_file.write(message + "\n")
 
 
 def subprocess_run(
-    args: list[str], user: str, timeout=None
+        args: list[str], user: str, timeout=None
 ) -> tuple[str, str]:
     """
     Runs the given arguments in a subprocess and returns the output and errors
@@ -102,8 +101,8 @@ def subprocess_run(
     max_chars = 30000  # You can change this number
     # If the standard output or error are longer than max_chars, truncate them
     truncation_message = (
-        f"\n\n** The output exceeded {max_chars} characters, so it was "
-        + "truncated **"
+            f"\n\n** The output exceeded {max_chars} characters, so it was "
+            + "truncated **"
     )
     if len(stdout) > max_chars:
         stdout = stdout[:max_chars] + truncation_message
