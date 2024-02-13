@@ -27,11 +27,11 @@ class Test01Setup(unittest.TestCase):
 
     # Files that must be in their submission
     # They will fail the first test case if they don't have these files
-    required_files = []
+    required_files = []  # TODO: Add the required files
 
     # Files that can be in their submission and should be
     # copied over. These could be extra credit files
-    optional_files = []
+    optional_files = []  # TODO: Add the optional files
 
     # If a submitted file is not a required or optional file, then
     # they will fail the first test case.
@@ -64,6 +64,11 @@ class Test01Setup(unittest.TestCase):
     def test_02_check_compile(self):
         """Main program compiles"""
 
+        # What files should be created when the following command is run
+        files_that_should_be_created = (
+            []
+        )  # TODO: Add the files that should be created
+
         # Tries to compile the student's main program
         # You could use the student's makefile
         # If all you want to test is individual functions, then you
@@ -89,9 +94,6 @@ class Test01Setup(unittest.TestCase):
             msg += ""
             raise AssertionError(msg)
 
-        # What files should be created when the student's makefile is run
-        files_that_should_be_created = []
-
         not_found_message = ""
         for file in files_that_should_be_created:
             if not os.path.isfile(os.path.join(os.getcwd(), file)):
@@ -104,7 +106,61 @@ class Test01Setup(unittest.TestCase):
             raise AssertionError(not_found_message)
 
 
-class Test02FunctionalityExample(unittest.TestCase):
+class Test02DirectOutputExample(unittest.TestCase):
+    """
+    Collection of test cases to test the direct output of the student's
+    code with user input. Test03 shows how to test the functions directly.
+    """
+
+    def setUp(self):
+        # Running the student's code and saving the output and errors
+        # This is run before all the test cases in this class
+
+        # Compiling their code
+        command = ["g++", "studentCode.cpp", "-Wall", "-o", "studentCode.out"]
+        compile_stdout, compile_stderr = utils.subprocess_run(
+            command, "student"
+        )
+        command_string = " ".join(
+            command
+        )  # Looks like "g++ studentCode.cpp -Wall -o studentCode.out"
+
+        # If there are compilation errors, then you can fail all the test cases
+        # within this class
+        if compile_stderr != "":
+            utils.ta_print(
+                f"Compile errors for {command_string}`: " + compile_stderr
+            )
+            raise AssertionError(f"Failed to compile with `{command_string}`")
+
+        # Running the student's code with different inputs
+        self.run1 = utils.run_program("studentCode.out", txtContents="1\n2\n")
+        self.run2 = utils.run_program("studentCode.out", txtContents="3\n4\n")
+
+    def test_01_menu_output(self):
+        """Menu output"""
+        # Checking for certain phrases in the output
+        expected_phrases = [
+            "1. Add",
+            "2. Subtract",
+            "3. Multiply",
+            "4. Divide",
+        ]
+        # Getting which phrases are missing out-of-order
+        # Returns the indexes of the phrases not found
+        out_of_order = utils.phrases_out_of_order(
+            expected_phrases, self.run1.output
+        )
+
+        # If a phrase is missing, then you can give a helpful error message
+        if len(out_of_order) > 0:
+            raise AssertionError(
+                "The following phrases are missing or out of order: "
+                + "\n".join([expected_phrases[i] for i in out_of_order])
+            )
+
+
+class Test03FunctionalityExample(unittest.TestCase):
     """
     Collection of test cases to test functions called in
     the exampleDriver.cpp file
