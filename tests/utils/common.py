@@ -37,7 +37,7 @@ def ta_print(*args) -> None:
 
 
 def subprocess_run(
-        args: list[str], user: str, timeout=None
+    args: list[str], user: str, timeout=None
 ) -> tuple[str, str]:
     """
     Runs the given arguments in a subprocess and returns the output and errors
@@ -105,8 +105,8 @@ def subprocess_run(
     max_chars = 30000  # You can change this number
     # If the standard output or error are longer than max_chars, truncate them
     truncation_message = (
-            f"\n\n** The output exceeded {max_chars} characters, so it was "
-            + "truncated **"
+        f"\n\n** The output exceeded {max_chars} characters, so it was "
+        + "truncated **"
     )
     if len(stdout) > max_chars:
         stdout = stdout[:max_chars] + truncation_message
