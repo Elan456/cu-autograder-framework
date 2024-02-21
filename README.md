@@ -33,12 +33,13 @@ Even though many files are mentioned, the two things that must be changed are th
   This shouldn't need to be changed. Typically, it just runs `test.py`
 * `requirements.txt` - A list of Python packages that need to be installed
   for the autograder to run.  
-* `ziper.sh` - A small script that zips up the autograder for upload to 
+* `zipper.sh` - A small script that zips up the autograder for upload to 
   Gradescope.
 ### Tests directory
 * `drivers` - Where you can place all the files that are needed to run the tests 
   besides the student's code. For example, C drivers that test the functionality
-  of certain functions in the student's code should be put here. 
+  of certain functions in the student's code should be put here. You can also put
+  input files that you want their code to read here. 
   Notice `exampleDriver.cpp` 
 * `test.py` - The Python script which compiles, runs, and observes drivers and
   the student's code. Examples are given in the file.
