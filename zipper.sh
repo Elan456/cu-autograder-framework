@@ -4,4 +4,4 @@
 # SET NAME BELOW 
 name="autograder"
 
-zip -r ../$name.zip .
+zip -r ../$name.zip . -x "*.git*"
