@@ -1,4 +1,4 @@
-#include "studentCode.h"
+#include "studentFuncs.h"
 #include <string>
 #include <iostream>
 

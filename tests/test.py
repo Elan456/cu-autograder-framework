@@ -1,5 +1,5 @@
 """
-This is the primary testing file which will hold all the test cases
+This is the primary testing file that will hold all the test cases
 that can contribute to the student's score.
 """
 
@@ -27,11 +27,16 @@ class Test01Setup(unittest.TestCase):
 
     # Files that must be in their submission
     # They will fail the first test case if they don't have these files
-    required_files = []
+    required_files = [
+        "studentMain.cpp",
+        "studentFuncs.cpp",
+        "studentFuncs.h",
+        "makefile",
+    ]  # TODO: Replace with actual files
 
     # Files that can be in their submission and should be
     # copied over. These could be extra credit files
-    optional_files = []
+    optional_files = []  # TODO: Add the optional files
 
     # If a submitted file is not a required or optional file, then
     # they will fail the first test case.
@@ -64,6 +69,11 @@ class Test01Setup(unittest.TestCase):
     def test_02_check_compile(self):
         """Main program compiles"""
 
+        # What files should be created when the following command is run
+        files_that_should_be_created = [
+            "studentMain.out"
+        ]  # TODO: Add the files that should be created
+
         # Tries to compile the student's main program
         # You could use the student's makefile
         # If all you want to test is individual functions, then you
@@ -89,9 +99,6 @@ class Test01Setup(unittest.TestCase):
             msg += ""
             raise AssertionError(msg)
 
-        # What files should be created when the student's makefile is run
-        files_that_should_be_created = []
-
         not_found_message = ""
         for file in files_that_should_be_created:
             if not os.path.isfile(os.path.join(os.getcwd(), file)):
@@ -104,7 +111,54 @@ class Test01Setup(unittest.TestCase):
             raise AssertionError(not_found_message)
 
 
-class Test02FunctionalityExample(unittest.TestCase):
+# TODO: Delete all the example test cases below and replace them with your own
+
+
+class Test02DirectOutputExample(unittest.TestCase):
+    """
+    Collection of test cases to test the direct output of the student's
+    code with user input. Test03 shows how to test the functions directly.
+    """
+
+    def setUp(self):
+        # Running the student's code with two different inputs,
+        # This relies on the code already being compiled in the `check_compile`
+        # test case to have the `studentMain.out` file
+
+        # Running the student's code with different inputs
+        # The \n simulates the user pressing enter
+        self.run1 = utils.run_program(
+            "./studentMain.out", txt_contents="1\n2\nq\n"
+        )
+        self.run2 = utils.run_program(
+            "./studentMain.out", txt_contents="3\n4\nq\n"
+        )
+
+    @number("2.1")
+    @weight(1)
+    def test_01_intro_output(self):
+        """Intro output is correct"""
+        # Checking for certain phrases in the output
+        expected_phrases = [
+            "Welcome to the calculator program!",
+            "No input file given",
+            "Defaulting to adding numbers from user input",
+        ]
+        # Getting which phrases are missing or out-of-order
+        # Returns the indexes of the phrases not found
+        out_of_order = utils.phrases_out_of_order(
+            expected_phrases, self.run1.output
+        )
+
+        # If a phrase is missing, then you can give a helpful error message
+        if len(out_of_order) > 0:
+            raise AssertionError(
+                "The following phrases are missing or out of order:\n "
+                + "\n".join([expected_phrases[i] for i in out_of_order])
+            )
+
+
+class Test03DirectFunctionExample(unittest.TestCase):
     """
     Collection of test cases to test functions called in
     the exampleDriver.cpp file
@@ -121,8 +175,8 @@ class Test02FunctionalityExample(unittest.TestCase):
         compile_errors, self.submission = utils.compile_and_run(
             [
                 "g++",
-                "exampleDriver.cpp",
-                "studentCode.cpp",  # Linking the student's code
+                "exampleDriver.cpp",  # Your testing driver
+                "studentFuncs.cpp",  # Linking the student's code
                 "-o",
                 "exampleDriver.out",
             ],
@@ -131,7 +185,7 @@ class Test02FunctionalityExample(unittest.TestCase):
 
         # If there are compilation errors, then you can fail all the test cases
         # within this class
-        signatures_of_functions_being_tested = "void example(char *)"
+        signatures_of_functions_being_tested = "int studentAdd(int, int)"
         if compile_errors != "":
             # Printing the details of the compiler errors such that only TAs
             # and instructors can easily view it. If this driver has hidden
@@ -162,7 +216,7 @@ class Test02FunctionalityExample(unittest.TestCase):
                 " later test cases in this group may not have run."
             )
 
-    @number("1.1")
+    @number("3.1")
     @weight(1)
     def test_simple_example(self):  # <- The word test is required in the name
         """Simple example test case"""  # <- The name that will be shown
@@ -185,7 +239,7 @@ class Test02FunctionalityExample(unittest.TestCase):
 
     # Partial credit docs:
     # https://github.com/gradescope/gradescope-utils/blob/0e642eff3bbc9bc86a7c2b9b9677f4c491d76beb/gradescope_utils/autograder_utils/decorators.py#L120C7-L120C21
-    @number("1.2")
+    @number("3.2")
     @partial_credit(4)
     def test_multi_example(self, set_score=None):
         """Adding integers of different sizes"""
@@ -217,6 +271,77 @@ class Test02FunctionalityExample(unittest.TestCase):
         # The set_score function is passed in by Gradescope
         set_score(score)
         if msg != "":
+            msg = "\n" + msg
             # Adding extra info to the message
             msg += "\nFailed to add integers of different sizes together."
             raise AssertionError(msg)
+
+
+class Test04UsingFileExample(unittest.TestCase):
+    """
+    Example of how to test the student's code when they must read from
+    a file and also write to a file
+    Must put the input file you want them to use in the drivers folder
+
+    This example uses the `exampleInputFile.txt` in the drivers folder
+    """
+
+    def setUp(self):
+        #  Because the input file is in the drivers folder, we know it
+        #  will already be copied into the source directory when the autograder
+        #  is run
+
+        # First, we need to give permissions to the student to read the file,
+        # so we can still run their code as the student user, and it will be
+        # able to use the file properly
+        os.chmod("exampleInputFile.txt", 0o644)
+
+        # Running the student's code and saving the output and errors
+        # In this example, we assume the student's code takes in argument
+        # -f to specify the input file
+        self.stdout, self.stderr = utils.subprocess_run(
+            ["./studentMain.out", "-f", "exampleInputFile.txt"], "student"
+        )
+
+        if self.stderr != "":
+            # Giving the TA's all the details of the error message
+            utils.ta_print(
+                "Error running when using exampleInputFile.txt: " + self.stderr
+            )
+            raise AssertionError(
+                "Errors were encountered when trying to use an input file"
+            )
+
+    @weight(1)
+    @number("4.1")
+    def test_41_correct_stdout_example(self):
+        """Using input file gives correct stdout"""
+        expected_output = [
+            "Welcome to the calculator program!",
+            "Output has been written to output.txt",
+        ]
+
+        missing = utils.phrases_out_of_order(expected_output, self.stdout)
+        if len(missing) > 0:
+            raise AssertionError(
+                "The following phrases are missing or out of order:\n "
+                + "\n".join([expected_output[i] for i in missing])
+            )
+
+    @weight(1)
+    @number("4.2")
+    def test_42_output_file_example(self):
+        """output.txt has the correct values"""
+        # If the student's code is supposed to write to a file,
+        # then we can check the contents of the file after running
+        # the student's code
+
+        # Opening the file and checking the contents
+        with open("output.txt", "r") as f:
+            output = f.read()
+            expected_output = "7\n5\n15"
+            if expected_output not in output:
+                raise AssertionError(
+                    "output.txt did not contain the expected "
+                    " values. It contained: " + output
+                )

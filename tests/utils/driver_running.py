@@ -39,7 +39,7 @@ def run_program(
     return its output
 
     executable - string containing the name of the executable to run.
-                 E.g. Program.out
+                 E.g. "Program.out"
 
     inputFile -     string containing the name of a text file containing
                     user input, separated by newlines. Default is `None`
@@ -66,7 +66,7 @@ def run_program(
         # and timeout after `timeout` seconds 1subprocess.run()` returns a
         # `CompletedProcess` object which contains the stdout and stderr
         results = subprocess.run(
-            ["./" + executable],
+            [executable],
             stdout=subprocess.PIPE,
             timeout=timeout,
             input=txt_contents,
