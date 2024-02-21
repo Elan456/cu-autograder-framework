@@ -160,7 +160,7 @@ class Test02DirectOutputExample(unittest.TestCase):
             )
 
 
-class Test03FunctionalityExample(unittest.TestCase):
+class Test03DirectFunctionExample(unittest.TestCase):
     """
     Collection of test cases to test functions called in
     the exampleDriver.cpp file
@@ -218,7 +218,7 @@ class Test03FunctionalityExample(unittest.TestCase):
                 " later test cases in this group may not have run."
             )
 
-    @number("1.1")
+    @number("3.1")
     @weight(1)
     def test_simple_example(self):  # <- The word test is required in the name
         """Simple example test case"""  # <- The name that will be shown
@@ -241,7 +241,7 @@ class Test03FunctionalityExample(unittest.TestCase):
 
     # Partial credit docs:
     # https://github.com/gradescope/gradescope-utils/blob/0e642eff3bbc9bc86a7c2b9b9677f4c491d76beb/gradescope_utils/autograder_utils/decorators.py#L120C7-L120C21
-    @number("1.2")
+    @number("3.2")
     @partial_credit(4)
     def test_multi_example(self, set_score=None):
         """Adding integers of different sizes"""
@@ -276,3 +276,65 @@ class Test03FunctionalityExample(unittest.TestCase):
             # Adding extra info to the message
             msg += "\nFailed to add integers of different sizes together."
             raise AssertionError(msg)
+
+
+class Test04UsingFileExample(unittest.TestCase):
+    """
+    Example of how to test the student's code when they must read from
+    a file and also write to a file
+    Must put the input file you want them to use in the drivers folder
+
+    This example uses the `exampleInputFile.txt` in the drivers folder
+    """
+
+    def setUp(self):
+        #  Because the input file is in the drivers folder, we know it
+        #  will already be copied into the source directory when the autograder
+        #  is run
+
+        # First we need to give permissions to the student to read the file,
+        # so we can still run their code as the student user, and it will be
+        # able to use the file properly
+        os.chmod("exampleInputFile.txt", 0o644)
+
+        # Running the student's code and saving the output and errors
+        # In this example, we assume the student's code takes in argument
+        # -f to specify the input file
+        self.stdout, self.stderr = utils.subprocess_run(
+            ["./studentCode.out", "-f", "exampleInputFile.txt"], "student"
+        )
+
+        if self.stderr != "":
+            utils.ta_print(
+                "Error running when using exampleInputFile.txt: " + self.stderr
+            )
+            raise AssertionError(
+                "Errors were encountered when trying to use an input file"
+            )
+
+    @weight(1)
+    @number("4.1")
+    def test_41_correct_stdout(self):
+        """Using input file gives correct stdout"""
+        expected_output = "The output of the student's code"
+        if expected_output not in self.stdout:
+            raise AssertionError(
+                "The student's code did not output the expected output"
+            )
+
+    @weight(1)
+    @number("4.2")
+    def test_42_output_file(self):
+        """Using input file gives correct output file"""
+        # If the student's code is supposed to write to a file,
+        # then we can check the contents of the file after running
+        # the student's code
+
+        # Opening the file and checking the contents
+        with open("exampleOutputFile.txt", "r") as f:
+            output = f.read()
+            if "The expected output of the student's code" not in output:
+                raise AssertionError(
+                    "The student's code did not output the expected "
+                    "output to the file"
+                )
