@@ -7,28 +7,16 @@ The below import statements are used to expose the functions in this module to
 the rest of the tests
 """
 
-from utils.file_checking import check_and_get_files
-from utils.driver_running import (
+
+# flake8: noqa F401
+from .file_checking import check_and_get_files
+from .driver_running import (
     run_program,
     Submission,
     compile_and_run,
     remove_main,
 )
-from utils.stdout_checking import phrases_out_of_order, check_phrases
+from .stdout_checking import phrases_out_of_order, check_phrases
 
 
-from utils.common import subprocess_run, ta_print
-
-# Adding the functions to __all__ so they can be imported with
-# from utils import *, and to make the linter happy
-__all__ = [
-    "check_and_get_files",
-    "run_program",
-    "Submission",
-    "subprocess_run",
-    "compile_and_run",
-    "ta_print",
-    "remove_main",
-    "phrases_out_of_order",
-    "check_phrases",
-]
+from .common import subprocess_run, ta_print
