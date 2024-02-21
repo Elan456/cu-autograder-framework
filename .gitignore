@@ -1,2 +1,4 @@
 .idea/
 venv/
+exampleProjectCode/
+*__pycache__/

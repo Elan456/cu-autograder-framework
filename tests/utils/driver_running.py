@@ -58,11 +58,6 @@ def run_program(
         elif txt_contents:
             txt_contents = bytes(txt_contents, "ascii")
 
-        # If the name of the executable is in the cwd, then a "./" is must be
-        # added to the beginning of the name
-        if executable[0] != "/":
-            executable = "./" + executable
-
         time.sleep(1)  # Sometimes, not having this would result in test
         # cases being unable to access the executable,
         # presumably because another test case was still running.
