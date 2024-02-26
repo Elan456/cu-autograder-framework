@@ -1,5 +1,4 @@
-# Clemson-GPAF
-*Clemson Gradescope Python-based Autograder Framework*   
+# Clemson University Autograder Framework 
 
 Python-based generic output checking autograder framework for use with the 
 [Gradescope](https://gradescope.com) autograder.
@@ -40,7 +39,7 @@ Even though many files are mentioned, the two things that must be changed are th
   besides the student's code. For example, C drivers that test the functionality
   of certain functions in the student's code should be put here. You can also put
   input files that you want their code to read here. 
-  Notice `exampleDriver.cpp` 
+  Notice `exampleDriver.cpp` and `exampleInputFile.txt`
 * `test.py` - The Python script which compiles, runs, and observes drivers and
   the student's code. Examples are given in the file.
 * `utils` - A Python package that contains our custom utilities for the autograder.
@@ -80,8 +79,8 @@ set up, they'll find all your hidden test cases.
 9. Celebrate!!
 
 ## Getting Help 
-Feel free to email me at [ema8@clemson.edu](ema8@clemson.edu) or message me on
-Teams to ask specific questions or set up a time to meet.
+Feel free to email me at [ema8@clemson.edu](ema8@clemson.edu), or if you are a Clemson student,
+message me on Teams to ask specific questions or set up a time to meet.
 
 ## Issues
 If you find any issues, please report them on the issues page
@@ -89,7 +88,7 @@ of the repository. Please include as much information as possible
 so that the issue can be reproduced and fixed.
 
 ## Feature Requests
-If you have any feature requests, also use the report them on the issues
+If you have any feature requests, also use the issues
 page of the repository. Please include as much information as possible
 so that the feature can be implemented as requested.
 
