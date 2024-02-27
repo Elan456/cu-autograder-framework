@@ -6,6 +6,8 @@ Some of these functions will help with sequential order and giving
 helpful error messages without giving away the answers.
 """
 
+import copy
+
 
 def phrases_out_of_order(expected_phrases, mother_string) -> list:
     """
@@ -30,53 +32,88 @@ def phrases_out_of_order(expected_phrases, mother_string) -> list:
     return not_found
 
 
-def phrases_out_of_order_hint(expected_phrases, mother_string):
+class Phrase:
+    """
+    A class to store information about a phrase that was expected to be found
+    """
+
+    def __init__(self, phrase: str, loc: int):
+        self.expected = phrase
+        self.found = False
+        self.loc = loc
+
+        # The part of the mother_string that should have contained this
+        # It's the section between the two closest expected phrases that
+        # were found
+        # Only exists if the phrase was not found
+        self.probable_part = ""
+
+
+def phrases_out_of_order_hint(
+    expected_phrases: list[str], mother_string: str
+) -> list[Phrase]:
     """
     Checking for each of these expected_phrases to be found within the
     mother_string. When a phrase is found, all the characters prior to it on
     the mother_string are ignored for future searches. As a result,
     if the first expected phrase is found at the end of the mother_string only,
     then there is no chance that the other phrases will be found.
-    :returns    The list of phrases indexes that were missing and
-                a list of strings that likely should contain the missing
-                phrases.
-                These two lists are parallel, so the first index of the
-                not_found list will correspond to the first index of the
-                parts_skipped list
+    :returns    A list of Phrase objects that were not found
     """
-    not_found = []  # Index of the phrases that were not found
-    parts_skipped = (
-        []
-    )  # Parallel to the not_found list, indicates what parts were skipped
 
-    waiting_for_skip = 0
-    for i, phrase in enumerate(expected_phrases):
-        # Getting the first location of the string
-        loc = mother_string.find(phrase)
-        if loc == -1:
-            not_found.append(i)
-            waiting_for_skip += 1
-        else:
-            # If somethings werent found, append the most
-            # recent parts skipped because that is where the
-            # phrase was expected to be an is likely where the error
-            # is
-            if waiting_for_skip > 0:
-                parts_skipped.extend(["" for _ in range(waiting_for_skip - 1)])
-                parts_skipped.append(mother_string[:loc])
-                waiting_for_skip = 0
-            # Removing the phrase and everything before it
-            mother_string = mother_string[loc + len(phrase) :]
-    # If when you get to the end, there are still not_found phrases waiting
-    # for their skip info to be used as a hint, give whatever is left in the
-    # mother_string
-    if waiting_for_skip > 0:
-        parts_skipped.extend(["" for _ in range(waiting_for_skip - 1)])
-        parts_skipped.append(mother_string)
-    return not_found, parts_skipped
+    phrases = [Phrase(p, -1) for p in expected_phrases if len(p) > 0]
+
+    # Step 1 -- Try to find each phrase such that one cannot be found at an
+    # earlier index than the previous phrases
+
+    cropped_string = copy.deepcopy(mother_string)
+    for i, phrase in enumerate(phrases):
+        loc = cropped_string.find(phrase.expected)
+        if loc != -1:
+            phrase.loc = len(mother_string) - len(cropped_string) + loc
+            phrase.found = True
+            cropped_string = cropped_string[loc + len(phrase.expected) :]
+
+    # Step 2 -- For the ones that were not found, find the part of the
+    # mother_string that should have contained it
+    for i, phrase in enumerate(phrases):
+        if not phrase.found:
+            left_found = None
+            right_found = None
+            for j in range(i - 1, -1, -1):
+                if phrases[j].found:
+                    left_found = j
+                    break
+            for j in range(i + 1, len(phrases)):
+                if phrases[j].found:
+                    right_found = j
+                    break
+
+            if left_found is not None and right_found is not None:
+                phrase.probable_part = mother_string[
+                    phrases[left_found].loc
+                    + len(phrases[left_found].expected) : phrases[
+                        right_found
+                    ].loc
+                ]
+            elif left_found is not None:
+                phrase.probable_part = mother_string[
+                    phrases[left_found].loc
+                    + len(phrases[left_found].expected) :
+                ]
+            elif right_found is not None:
+                phrase.probable_part = mother_string[
+                    : phrases[right_found].loc
+                ]
+            else:
+                phrase.probable_part = mother_string
+
+    return [p for p in phrases if not p.found]
 
 
-def check_phrases(expected_phrases, mother_string, hint_level=1) -> str:
+def check_phrases(
+    expected_phrases: list[str], mother_string: str, hint_level=1
+) -> str:
     """
     Checks if all the expected phrases are in the output in the correct order
 
@@ -108,36 +145,42 @@ def check_phrases(expected_phrases, mother_string, hint_level=1) -> str:
                             it's not empty
     """
 
-    not_found, part_skipped = phrases_out_of_order_hint(
-        expected_phrases, mother_string
-    )
+    missed_phrases = phrases_out_of_order_hint(expected_phrases, mother_string)
 
     # Everything was found
-    if len(not_found) == 0:
+    if len(missed_phrases) == 0:
         return ""
 
-    msg = "Fail... "
+    msg = "Fail\n\n"
     if hint_level >= 1:
-        msg += missing_phrases_msg(len(not_found), len(expected_phrases))
+        msg += missing_phrases_msg(len(missed_phrases), len(expected_phrases))
         msg += "\n\n"
     if hint_level >= 2:
         msg += "The following sections of your output did not contain an "
         msg += "expected phrase and are likely the cause for the issue:\n"
-        for p in part_skipped:
-            if len(p) > 0:
-                msg += "\n====================\n" + p
-        msg += "\n====================\n"
+        used_probable_parts = []
+        for i, p in enumerate(missed_phrases):
+            if len(missed_phrases) > 0:
+                pp = missed_phrases[i].probable_part
+                if pp not in used_probable_parts:
+                    used_probable_parts.append(pp)
+                    msg += (
+                        f"\n=========Sec {len(used_probable_parts)}=========\n"
+                    )
+                    msg += pp
+                    msg += (
+                        f"\n=======End Sec {len(used_probable_parts)}=======\n"
+                    )
     if hint_level >= 3:
         msg += "\n\nHere are the expected phrases that were not found:\n"
-        for i in not_found:
-            msg += "\n-----\n" + expected_phrases[i]
-        msg += "\n-----\n"
+        for i, p in enumerate(missed_phrases):
+            msg += f"\n=========Phrase {i}=========\n" + p.expected
+            msg += f"\n=======End Phrase {i}=======\n"
 
     return msg
 
 
 def missing_phrases_msg(num_missing: int, num_expected: int) -> str:
     output = f"{num_missing} out of the {num_expected} phrases weren't found. "
-    output += "Make sure you check over the sample output "
-    output += "to match all the specific phrases that are being used."
+    output += "Reference the sample output and double check the directions."
     return output
