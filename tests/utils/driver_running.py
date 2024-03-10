@@ -32,7 +32,7 @@ def run_program(
     executable: str,
     input_file: str = None,
     txt_contents: str = None,
-    timeout: float = 0.1,
+    timeout: float = None,
 ) -> Submission:
     """
     Run the specified executable as the student user with given input and

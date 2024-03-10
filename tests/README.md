@@ -1,18 +1,28 @@
 # Tests Folder
 
-- `test.py` - The main test file. It should contain Python unit tests.
-- `utils` - Python package containing modules with helper functions for testing.
-More info in the `utils/README.md` file.
-- `drivers` - Everything placed in this folder will be copied into the source
-directory before testing. This is useful for including drivers for testing
-individual functions.
+### `test.py`
+
+The main testing file. It should contain all the Python unit tests used for grading.
+
+### `utils`
+
+A Python package containing modules with helper functions for testing. More info in the `utils/README.md` file.
+
+### `drivers`
+
+This is where you should put scripts that are used to test individual functions.   
+They will be copied into the source directory before testing, and will never be given read access to the "student" user.
+
+### `io_files`
+
+Put the files you want the student's code to be able to read and interact with here. Everything here will be copied
+into the source directory before testing and given read access to the "student" user.
 
 ## Security
 
-Everything in this folder cannot be read by the "student" user.
-When the drivers are copied into the source directory, they are still owned
-by the "root" user, so the "student" user cannot read them. To still use them, compile
-the drivers as "root" and then run them as "student." You wouldn't be able to
-compile them as "student" because they cannot read the drivers.
+Everything in the `tests` folder is owned by the "root" user and cannot be read by the "student" user. You can
+safely store hidden test cases here in the `test.py` and `drivers` areas. The `io_files` directory is the only
+exception to this rule, as each file is given read access to the "student" user after being copied into the 
+source directory.
 
 
