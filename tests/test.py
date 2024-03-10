@@ -51,6 +51,20 @@ class Test01Setup(unittest.TestCase):
     if os.path.isdir("tests/drivers") and len(os.listdir("tests/drivers")) > 0:
         os.system("cp -r tests/drivers/* .")
 
+    # Moving files from the io_files folder into the source directory and
+    # giving each file read permissions to the student user
+    if (
+        os.path.isdir("tests/io_files")
+        and len(os.listdir("tests/io_files")) > 0
+    ):
+        os.system("cp -r tests/io_files/* .")
+
+    # Getting list of file name in the io_files folder
+    io_files = os.listdir("tests/io_files")
+    # Giving read permissions to the student user
+    for file in io_files:
+        os.chmod(file, 0o644)
+
     @number("0.1")  # Does not affect execution order
     @weight(0)
     def test_01_check_files(self):
@@ -295,6 +309,7 @@ class Test04UsingFileExample(unittest.TestCase):
         # so we can still run their code as the student user, and it will be
         # able to use the file properly
         os.chmod("exampleInputFile.txt", 0o644)
+        os.chmod("exampleInputFile2.txt", 0o644)
 
         # Running the student's code and saving the output and errors
         # In this example, we assume the student's code takes in argument
@@ -337,11 +352,14 @@ class Test04UsingFileExample(unittest.TestCase):
         # the student's code
 
         # Opening the file and checking the contents
-        with open("output.txt", "r") as f:
-            output = f.read()
-            expected_output = "7\n5\n15"
-            if expected_output not in output:
-                raise AssertionError(
-                    "output.txt did not contain the expected "
-                    " values. It contained: " + output
-                )
+        expected_output = "7\n5\n15"
+        try:
+            with open("output.txt", "r") as f:
+                output = f.read()
+                if expected_output not in output:
+                    raise AssertionError(
+                        "output.txt did not contain the expected "
+                        " values. It contained: " + output
+                    )
+        except FileNotFoundError:
+            raise AssertionError("output.txt was not created")
