@@ -9,12 +9,18 @@ import os
 SOURCE_DIR = "/autograder/source"  # This is also the cwd for the autograder
 SUBMISSION_DIR = "/autograder/submission"
 
-# Creating an empty ta_print.txt file
-with open("/autograder/source/tests/ta_print.txt", "w") as ta_print_file:
-    ta_print_file.write("")
+try:
+    # Creating an empty ta_print.txt file
+    with open("/autograder/source/tests/ta_print.txt", "w") as ta_print_file:
+        ta_print_file.write("")
 
-# Removing read access from non-root users to ta_print.txt
-os.chmod("/autograder/source/tests/ta_print.txt", 0o600)  # 6 is rw for owner
+    # Removing read access from non-root users to ta_print.txt
+    os.chmod("/autograder/source/tests/ta_print.txt", 0o600)
+
+except FileNotFoundError:
+    # If the file is not found, then the directory is not mounted
+    # This is fine because the file is only used for debugging
+    pass
 
 
 def ta_print(*args) -> None:
