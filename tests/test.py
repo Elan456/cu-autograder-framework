@@ -301,9 +301,9 @@ class Test04UsingFileExample(unittest.TestCase):
     """
 
     def setUp(self):
-        # Because exampleInputFile.txt is in the io_files folder, we know it 
-        # will already be copied into source and given read permission to the 
-        # student 
+        # Because exampleInputFile.txt is in the io_files folder, we know it
+        # will already be copied into source and given read permission to the
+        # student
 
         # Running the student's code and saving the output and errors
         # In this example, we assume the student's code takes in argument
