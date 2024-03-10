@@ -301,15 +301,9 @@ class Test04UsingFileExample(unittest.TestCase):
     """
 
     def setUp(self):
-        #  Because the input file is in the drivers folder, we know it
-        #  will already be copied into the source directory when the autograder
-        #  is run
-
-        # First, we need to give permissions to the student to read the file,
-        # so we can still run their code as the student user, and it will be
-        # able to use the file properly
-        os.chmod("exampleInputFile.txt", 0o644)
-        os.chmod("exampleInputFile2.txt", 0o644)
+        # Because exampleInputFile.txt is in the io_files folder, we know it 
+        # will already be copied into source and given read permission to the 
+        # student 
 
         # Running the student's code and saving the output and errors
         # In this example, we assume the student's code takes in argument
