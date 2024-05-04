@@ -8,14 +8,14 @@ Originally based on the
 given by Gradescope.
 
 # Usage
-1. Either clone the repository or download the zip file and extract it.
-2. Edit the files and replace the examples with your own code.
-   * Change `tests/drivers/exampleDriver.cpp` to your own driver or remove it.
-   * Remove and change the unit tests in `tests/test.py`.
-3. Zip up the autograder (you can use the `ziper.sh` script).
-4. Upload the autograder to Gradescope (ideally in a private testing assignment).
-5. Run the autograder on a submission (sample code) and see if it works properly.
-
+1. Download the latest release from the [releases page](https://github.com/Elan456/cu-autograder-framework/releases) 
+or clone the repository.
+2. Place testing drivers in the `tests/drivers` directory.
+3. Place any input files that the student's code should read in the `tests/io_files` directory.
+4. Put unit tests in the `tests/test.py` file which can use the drivers and io_files.
+5. Zip up the autograder: `sh zipper.sh` (The name can be changed in the `zipper.sh` file)
+6. Upload the autograder to Gradescope.
+7. Upload your sample code to Gradescope and see if everything works as expected.
 ## Files (and what they do)
 
 Even though many files are mentioned, the two things that must be changed are the 
@@ -34,16 +34,19 @@ Even though many files are mentioned, the two things that must be changed are th
   for the autograder to run.  
 * `zipper.sh` - A small script that zips up the autograder for upload to 
   Gradescope.
+
 ### Tests directory
-* `drivers` - Where you can place all the files that are needed to run the tests 
-  besides the student's code. For example, C drivers that test the functionality
-  of certain functions in the student's code should be put here. You can also put
-  input files that you want their code to read here. 
-  Notice `exampleDriver.cpp` and `exampleInputFile.txt`
+
+
+| Directory        | Use                      | Function                                                                         |
+|------------------|--------------------------|----------------------------------------------------------------------------------|
+| `tests/drivers`  | Store non-Python drivers | Copied into `source` folder **without giving** read access to the "student"      |
+| `tests/io_files` | Store input files        | Copied into `source` folder and **given** read access to the "student" user      |
+
 * `test.py` - The Python script which compiles, runs, and observes drivers and
   the student's code. Examples are given in the file.
 * `utils` - A Python package that contains our custom utilities for the autograder.
-  This is where define functions that are used multiple times in the autograder.
+  This is where to define functions that are used multiple times in the autograder.
 
 # Security 
 This framework wasn't made with security as the main focus; however, precautions 
