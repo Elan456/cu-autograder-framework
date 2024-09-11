@@ -38,7 +38,7 @@ def run_program(
     Run the specified executable as the student user with given input and
     return its output
 
-    executable - string containing the name of the executable to run.
+    executable - string containing the name or path of the executable to run.
                  E.g. "Program.out"
 
     inputFile -     string containing the name of a text file containing
@@ -46,7 +46,7 @@ def run_program(
     txtContents -   string containing the user input, separated by newlines.
                     Default is `None`.
     timeout -   float specifying how many seconds to wait before terminating
-                the program. Default is 0.1
+                the program. Default is None
     """
 
     try:
@@ -61,6 +61,10 @@ def run_program(
         time.sleep(1)  # Sometimes, not having this would result in test
         # cases being unable to access the executable,
         # presumably because another test case was still running.
+
+        # If the executable has no path and doesn't have a ./, then add it
+        if "/" not in executable and not executable.startswith("./"):
+            executable = "./" + executable
 
         # Run the code submission, use txtContents to serve as user input,
         # and timeout after `timeout` seconds 1subprocess.run()` returns a
