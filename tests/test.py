@@ -43,27 +43,10 @@ class Test01Setup(unittest.TestCase):
     # This helps reduce the number of extra files submitted by the student,
     # making it easier for the TAs to grade the correct files later
 
-    # Copying all the files from the drivers folder into
-    # the source directory, so we can use them to test the
-    # student's code later
-    # When the autograder is used, the cwd (i.e. the ".") is the
-    # source directory (/autograder/source/)
-    if os.path.isdir("tests/drivers") and len(os.listdir("tests/drivers")) > 0:
-        os.system("cp -r tests/drivers/* .")
-
-    # Moving files from the io_files folder into the source directory and
-    # giving each file read permissions to the student user
-    if (
-        os.path.isdir("tests/io_files")
-        and len(os.listdir("tests/io_files")) > 0
-    ):
-        os.system("cp -r tests/io_files/* .")
-
-    # Getting list of file name in the io_files folder
-    io_files = os.listdir("tests/io_files")
-    # Giving read permissions to the student user
-    for file in io_files:
-        os.chmod(file, 0o644)
+    # Grabbing all the drivers and io_files and moving them into the source
+    # directory where the student's code can interact with them
+    utils.setup.move_drivers_to_source()
+    utils.setup.move_io_files_to_source()
 
     @number("0.1")  # Does not affect execution order
     @weight(0)
@@ -73,7 +56,9 @@ class Test01Setup(unittest.TestCase):
         # Checking if the required files all exist and
         # no unexpected files were given
         # Moves the files into the source directory as well
-        utils.check_and_get_files(self.required_files, self.optional_files)
+        utils.setup.check_and_get_files(
+            self.required_files, self.optional_files
+        )
 
         time.sleep(1)  # Gives a moment for the files to be moved over
         # and recognized by the system
@@ -233,7 +218,7 @@ class Test03DirectFunctionExample(unittest.TestCase):
     @number("3.1")
     @weight(1)
     def test_simple_example(self):  # <- The word test is required in the name
-        """Simple example test case"""  # <- The name that will be shown
+        """Checking driver output test"""  # <- The name that will be shown
 
         expected_outputs = ["Case 3+3=6 pass"]
         msg = ""

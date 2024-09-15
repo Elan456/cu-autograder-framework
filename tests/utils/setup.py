@@ -1,10 +1,44 @@
 """
-This file contains functions that are used to check the files in the submission
+This file contains functions for setting up the source directory and
+checking that the student submitted the correct files
 """
 
 import os
 import shutil
 import utils.common as common
+
+
+def move_drivers_to_source():
+    """
+    Moves the drivers from the drivers directory into the source directory
+    """
+    # Copying all the files from the drivers folder into
+    # the source directory, so we can use them to test the
+    # student's code later
+    # When the autograder is used, the cwd (i.e. the ".") is the
+    # source directory (/autograder/source/)
+    if os.path.isdir("tests/drivers") and len(os.listdir("tests/drivers")) > 0:
+        os.system("cp -r tests/drivers/* .")
+
+
+def move_io_files_to_source():
+    """
+    Moves the files from the io_files directory into the source directory
+    Gives the student read permissions to the files
+    """
+    # Moving files from the io_files folder into the source directory and
+    # giving each file read permissions to the student user
+    if (
+        os.path.isdir("tests/io_files")
+        and len(os.listdir("tests/io_files")) > 0
+    ):
+        os.system("cp -r tests/io_files/* .")
+
+    # Getting list of file names in the io_files folder
+    io_files = os.listdir("tests/io_files")
+    # Giving read permissions to the student user
+    for file in io_files:
+        os.chmod(file, 0o644)
 
 
 def check_and_get_files(
