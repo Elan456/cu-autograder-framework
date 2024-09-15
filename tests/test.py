@@ -251,6 +251,11 @@ class Test03DirectFunctionExample(unittest.TestCase):
                         " integers together correctly. "
                     )
 
+        if msg != "":
+            # Adding extra info to the message
+            msg += "\nFailed to add simple integers together."
+            raise AssertionError(msg)
+
     # Partial credit docs:
     # https://github.com/gradescope/gradescope-utils/blob/0e642eff3bbc9bc86a7c2b9b9677f4c491d76beb/gradescope_utils/autograder_utils/decorators.py#L120C7-L120C21
     @number("3.2")

@@ -34,14 +34,16 @@ Even though many files are mentioned, the two things that must be changed are th
   for the autograder to run.  
 * `zipper.sh` - A small script that zips up the autograder for upload to 
   Gradescope.
+* `example_sample_code/samplecode.zip` - Sample code which should pass
+all the example test cases given in this framework
 
 ### Tests directory
 
 
 | Directory        | Use                      | Function                                                                         |
 |------------------|--------------------------|----------------------------------------------------------------------------------|
-| `tests/drivers`  | Store non-Python drivers | Copied into `source` folder **without giving** read access to the "student"      |
-| `tests/io_files` | Store input files        | Copied into `source` folder and **given** read access to the "student" user      |
+| `tests/drivers`  | Store non-Python drivers | Copied into the `source` folder **without giving** read access to the "student" user      |
+| `tests/io_files` | Store input files        | Copied into the `source` folder and **given** read access to the "student" user      |
 
 * `test.py` - The Python script which compiles, runs, and observes drivers and
   the student's code. Examples are given in the file.

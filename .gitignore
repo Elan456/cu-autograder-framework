@@ -1,5 +1,6 @@
 .idea/
 venv/
+.vscode/
 exampleProjectCode/
 utility_testing/
 *__pycache__/
