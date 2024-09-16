@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-apt-get install -y python3 python3-pip python3-dev
+# python is used to run autograder, gdb is used to debug over ssh
+apt-get install -y python3 python3-pip python3-dev gdb
 
 # Installs some English dictionaries 
 # These are needed for the "words" file to exist 
