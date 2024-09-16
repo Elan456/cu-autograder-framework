@@ -9,7 +9,7 @@ the rest of the tests
 
 
 # flake8: noqa F401
-from .file_checking import check_and_get_files
+from . import setup
 from .driver_running import (
     run_program,
     Submission,
