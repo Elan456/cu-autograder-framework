@@ -2,7 +2,7 @@
 This file contains functions to parse and use entities from C and C++ files
 """
 
-from clang.cindex import CursorKind, Index, Cursor
+from clang.cindex import Cursor, CursorKind, Index, TranslationUnit
 
 
 def find_entity(node: Cursor, kind: CursorKind, name: str) -> Cursor:
@@ -34,26 +34,32 @@ def get_cursor_range(cursor: Cursor) -> tuple[int, int]:
     return (start, end - start)
 
 
-def get_function_ranges(input_filename: str, output_filename: str,
-                        function_names: tuple[str, ...]) -> list[tuple[int,
-                                                                       int]]:
+def parse_file(input_filename: str) -> TranslationUnit:
     """
-    Get the ranges
+    Return the TranslationUnit for the given file
     """
 
-    # init Index to parse file and get TranslationUnit
+    # init Index to parse file
     index = Index.create()
-    tu = index.parse(input_filename)
+
+    return index.parse(input_filename)
+
+
+def get_function_ranges(cursor: Cursor, function_names:
+                        tuple[str, ...]) -> list[tuple[int, int]]:
+    """
+    Get the ranges for supplied functions
+    """
 
     # store entity ranges for requested functions (if found)
-    entity_ranges = []
+    function_ranges = []
     for func_name in function_names:
-        entity = find_entity(tu.cursor, CursorKind.FUNCTION_DECL, func_name)
+        entity = find_entity(cursor, CursorKind.FUNCTION_DECL, func_name)
         if entity is not None:
-            entity_ranges.append(get_cursor_range(entity))
+            function_ranges.append(get_cursor_range(entity))
 
     # return ranges sorted by start position
-    return sorted(entity_ranges, key=lambda x: x[0])
+    return sorted(function_ranges, key=lambda x: x[0])
 
 
 def extract_functions(input_filename: str, output_filename: str,
@@ -62,18 +68,18 @@ def extract_functions(input_filename: str, output_filename: str,
     Extract the desired function names from the input file into the output file
     """
 
-    function_ranges = get_function_ranges(input_filename, output_filename,
-                                          function_names)
+    unit = parse_file(input_filename)
+    function_ranges = get_function_ranges(unit.cursor, function_names)
 
     contents = []
-    with open(input_filename, 'r') as input_file:
+    with open(input_filename, "r") as input_file:
         for (offset, length) in function_ranges:
             # add function to content to write
             input_file.seek(offset)
             contents.append(input_file.read(length))
 
-    with open(output_filename, 'w') as output_file:
-        output_file.write('\n\n'.join(contents))
+    with open(output_filename, "w") as output_file:
+        output_file.write("\n\n".join(contents))
 
 
 def remove_functions(input_filename: str, output_filename: str,
@@ -83,11 +89,11 @@ def remove_functions(input_filename: str, output_filename: str,
     file
     """
 
-    function_ranges = get_function_ranges(input_filename, output_filename,
-                                          function_names)
+    unit = parse_file(input_filename)
+    function_ranges = get_function_ranges(unit.cursor, function_names)
 
     contents = []
-    with open(input_filename, 'r') as input_file:
+    with open(input_filename, "r") as input_file:
         prev_pos = 0
         for (offset, length) in function_ranges:
             # add file contents excluding function to remove
@@ -100,5 +106,5 @@ def remove_functions(input_filename: str, output_filename: str,
         # finish reading file contents
         contents.append(input_file.read())
 
-    with open(output_filename, 'w') as output_file:
-        output_file.write(''.join(contents))
+    with open(output_filename, "w") as output_file:
+        output_file.write("".join(contents))
