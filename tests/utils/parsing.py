@@ -5,6 +5,17 @@ This file contains functions to parse and use entities from C and C++ files
 from clang.cindex import Cursor, CursorKind, Index, TranslationUnit
 
 
+def parse_file(input_filename: str) -> TranslationUnit:
+    """
+    Return the TranslationUnit for the given file
+    """
+
+    # init Index to parse file
+    index = Index.create()
+
+    return index.parse(input_filename)
+
+
 def find_entities(node: Cursor, include_calls: bool,
                   *entities: tuple[CursorKind, str]) -> list[Cursor, ...]:
     """
@@ -21,8 +32,8 @@ def find_entities(node: Cursor, include_calls: bool,
         current_entity = stack.pop()
 
         for child in current_entity.get_children():
-            if any(child.kind == kind and child.spelling == name for
-                   kind, name in entities):
+            if any(child.kind == kind and child.spelling == name
+                   for kind, name in entities):
                 # add matching entries
                 found_entities.append(child)
             else:
@@ -37,14 +48,14 @@ def find_entities(node: Cursor, include_calls: bool,
 
             for child in current_entity.get_children():
                 # continue search only for children in same file
-                if str(child.location.file) == str(current_entity.location.
-                                                   file):
+                if str(child.location.file) == str(current_entity.
+                                                   location.file):
                     # check if child is call expression to ref in same file
-                    if child.kind == CursorKind.CALL_EXPR and \
-                            child.referenced is not None and \
-                            str(child.referenced.location.file) == str(
-                                current_entity.location.file) \
-                            and child.referenced not in found_entities:
+                    if (child.kind == CursorKind.CALL_EXPR and
+                            child.referenced is not None and
+                            str(child.referenced.location.
+                                file) == str(current_entity.location.file)
+                            and child.referenced not in found_entities):
                         # add call expression's reference if true
                         found_entities.append(child.referenced)
                         stack.append(child.referenced)
@@ -52,6 +63,27 @@ def find_entities(node: Cursor, include_calls: bool,
                         stack.append(child)
 
     return found_entities
+
+
+def get_cursor_range(cursor: Cursor) -> tuple[int, int]:
+    """
+    Returns offset position and length of a Cursor in the source file
+    """
+
+    start = cursor.extent.start.offset
+    end = cursor.extent.end.offset
+
+    return (start, end - start)
+
+
+def get_direct_include_offsets(tu: TranslationUnit) -> tuple[int, ...]:
+    """
+    Returns the offsets for the inclusion directives directly in the file
+    """
+
+    return (x.location.offset for x in
+            filter(lambda x: x.depth == 1,  # only direct includes
+                   tu.get_includes()))
 
 
 def get_global_ranges(node: Cursor) -> list[tuple[int, int, str]]:
@@ -68,8 +100,7 @@ def get_global_ranges(node: Cursor) -> list[tuple[int, int, str]]:
     for child in node.get_children():
         if child.kind in (CursorKind.VAR_DECL,  # global variables
                           CursorKind.USING_DIRECTIVE,  # using namespace ...
-                          CursorKind.USING_DECLARATION,  # using ...
-                          ):
+                          CursorKind.USING_DECLARATION):  # using ...
             found_entities.append(child)
 
     # store entity ranges for found requested entities
@@ -77,38 +108,6 @@ def get_global_ranges(node: Cursor) -> list[tuple[int, int, str]]:
 
     # return ranges sorted by start position
     return sorted(entity_ranges, key=lambda x: x[0])
-
-
-def get_direct_include_offsets(tu: TranslationUnit) -> tuple[int, ...]:
-    """
-    Returns the offsets for the inclusion directives directly in the file
-    """
-
-    return (x.location.offset for x in
-            filter(lambda x: x.depth == 1,  # only direct includes
-                   tu.get_includes()))
-
-
-def get_cursor_range(cursor: Cursor) -> tuple[int, int]:
-    """
-    Returns offset position and length of a Cursor in the source file
-    """
-
-    start = cursor.extent.start.offset
-    end = cursor.extent.end.offset
-
-    return (start, end - start)
-
-
-def parse_file(input_filename: str) -> TranslationUnit:
-    """
-    Return the TranslationUnit for the given file
-    """
-
-    # init Index to parse file
-    index = Index.create()
-
-    return index.parse(input_filename)
 
 
 def get_function_ranges(cursor: Cursor, include_calls: bool,
@@ -119,8 +118,7 @@ def get_function_ranges(cursor: Cursor, include_calls: bool,
 
     found_functions = find_entities(cursor, include_calls,
                                     *((CursorKind.FUNCTION_DECL, func)
-                                      for func in function_names),
-                                    )
+                                      for func in function_names))
 
     # store entity ranges for found requested functions
     function_ranges = map(get_cursor_range, found_functions)
@@ -146,7 +144,7 @@ def extract_functions(input_filename: str, output_filename: str,
             for offset in get_direct_include_offsets(unit):
                 # add inclusion directive to content to be written
                 input_file.seek(offset)
-                contents.append('#include ' + input_file.readline().strip())
+                contents.append("#include " + input_file.readline().strip())
 
         for (offset, length) in get_global_ranges(unit.cursor):
             input_file.seek(offset)
