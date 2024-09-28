@@ -54,6 +54,31 @@ def find_entities(node: Cursor, include_calls: bool,
     return found_entities
 
 
+def get_global_ranges(node: Cursor) -> list[tuple[int, int, str]]:
+    """
+    Get the ranges for required "globals" (global variables and
+    namespace declaration/directives)
+    """
+
+    found_entities = []
+
+    if node.kind != CursorKind.TRANSLATION_UNIT:
+        return found_entities
+
+    for child in node.get_children():
+        if child.kind in (CursorKind.VAR_DECL,  # global variables
+                          CursorKind.USING_DIRECTIVE,  # using namespace ...
+                          CursorKind.USING_DECLARATION,  # using ...
+                          ):
+            found_entities.append(child)
+
+    # store entity ranges for found requested entities
+    entity_ranges = map(get_cursor_range, found_entities)
+
+    # return ranges sorted by start position
+    return sorted(entity_ranges, key=lambda x: x[0])
+
+
 def get_direct_include_offsets(tu: TranslationUnit) -> tuple[int, ...]:
     """
     Returns the offsets for the inclusion directives directly in the file
@@ -122,6 +147,10 @@ def extract_functions(input_filename: str, output_filename: str,
                 # add inclusion directive to content to be written
                 input_file.seek(offset)
                 contents.append('#include ' + input_file.readline().strip())
+
+        for (offset, length) in get_global_ranges(unit.cursor):
+            input_file.seek(offset)
+            contents.append(input_file.read(length) + ";")
 
         for (offset, length) in function_ranges:
             # add function to content to be written
