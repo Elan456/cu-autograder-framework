@@ -22,3 +22,34 @@ chmod o= /autograder/source/tests/*  # So they can't see the test cases
 # However, this is being ran before all the testing scripts are copied in, so 
 # they still won't be able to access them. 
 chmod go=rwx /autograder/source  # So they can create files when compiling
+
+# create temp file to download harness to
+TMP_HARNESS="$(mktemp)"
+curl -f 'https://s3-us-west-2.amazonaws.com/gradescope-static-assets/autograder/python3/harness.py' -o "$TMP_HARNESS" || 
+	(echo 'Unable to download harness for additional security checks! Please check the harness URL!' && exit 0)
+
+# find line number of run_autograder function
+line_num="$(grep -m1 -n 'def run_autograder' "$TMP_HARNESS" | cut -f1 -d:)"
+
+[ -z "$line_num" ] && echo 'Unable to find function to add security checks!' && exit 0
+
+# store checksum for run_autograder script
+checksum="$(sha256sum /autograder/run_autograder)"
+
+# add checksum checking to harness script
+{
+	head -n "$line_num" "$TMP_HARNESS"
+	echo \
+"        if os.system('echo \"$checksum\" | sha256sum -c') != 0:
+            result = {'score': -100, 'output': 'Autograder is not allowed to be overwritten!'}
+            results_path = os.path.join(self.results_path, 'results.json')
+            with open(results_path, 'w') as f:
+                json.dump(result, f)
+            self.elapsed_time = 0
+            self.exit_status = 0
+            return"
+	tail -n "+$((line_num + 1))" "$TMP_HARNESS"
+} > /autograder/harness.py
+
+# delete temp file
+rm -f "$TMP_HARNESS"
