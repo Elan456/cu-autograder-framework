@@ -7,6 +7,7 @@ import subprocess
 import time
 import os
 import utils.common as common
+import utils.parsing as parsing
 
 
 # Class used to represent the result of a student's submission
@@ -130,38 +131,8 @@ def remove_main(input_filename, output_filename):
     output file
     This can be used to later test individual functions without dealing with
     multiple definitions of main.
-
-    This is a pretty inconsistent approach and shouldn't be relied on much.
-    There are other ways using static functions to get around main
     """
-    stack = []
-    inside_main = False
-
-    with open(input_filename, "r") as input_file:
-        lines = input_file.readlines()
-
-    with open(output_filename, "w") as output_file:
-        for line in lines:
-            # strip removes all whitespace at the beginning and end of the
-            # string
-            stripped = line.strip()
-            main_starts = ["int main(", "int main ("]
-
-            if any(stripped.startswith(start) for start in main_starts):
-                inside_main = True
-
-            if not inside_main:
-                output_file.write(line)
-            else:
-                # Keeping track of the curly braces to only remove main
-                for char in line:
-                    if char == "{":
-                        stack.append(char)
-                    elif char == "}":
-                        if stack:
-                            stack.pop()
-                        if not stack:
-                            inside_main = False
+    parsing.remove_functions(input_filename, output_filename, "main")
 
 
 def compile_and_run(
