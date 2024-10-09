@@ -65,6 +65,40 @@ Security becomes increasingly critical as the number of students using the frame
 
 # Contributing
 
+## Feature Requirements
+
+If you have a new feature you would like to add it to the framework, please ensure it meets the following 6 requirements:
+
+1. **Reliable**  
+   Everything built directly into the main framework must work consistently. This is meant to be a reliable baseplate for
+   autograder developers.   
+   We'll continue adding to the [example_sample_code](example_sample_code), so that 
+   we can test new features.    
+   **Experimental features** can be kept on separate branches or forks. 
+
+2. **Modular**   
+   It must be easy to include or exclude any feature. Don't force it on the developer,
+   but if they want to use this feature, it should be easy to get to. This aligns with
+   breaking things into multiple files and using Python's packaging system to stay
+   organized and promote reusability.
+
+3. **Documented**     
+   How it works, when to use it, and what it does should be well documented.
+   Add documentation to the [README.md](/tests/utils/README.md) in the utils directory,
+   so new users can find your feature and understand when to use it. 
+
+4. **Useful**    
+   This feature should address a real problem and either save time or effort for the developer or students.
+
+5. **Minimal Footprint**    
+   Don't introduce unnecessary complexity. We want debugging student's submissions on the autograder
+   to get easier, not harder. Autograders also need to build and run quickly. 
+
+6. **Backwards Compatibility**      
+   New features shouldn't break the old features.
+   If an old feature needs to be removed, it should be replaced
+   with a suitable alternative. 
+
 ## Making Changes
 
 To contribute to this repository, follow one of the two workflows below:
