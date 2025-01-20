@@ -141,6 +141,14 @@ To contribute to this repository, follow one of the two workflows below:
 
 By following either method, you can contribute effectively to the project.
 
+### Pre-commit setup
+This repository uses pre-commit hooks to ensure code quality and consistency. To set up pre-commit hooks, run the following command in the repository directory:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
 # Getting Help 
 Feel free to email me at [ema8@clemson.edu](mailto:ema8@clemson.edu), or if you are a Clemson student,
 message me on Teams to ask specific questions or set up a time to meet.

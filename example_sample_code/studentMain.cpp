@@ -22,8 +22,27 @@ void no_file_mode(){
     int num2;
     cin >> num2;
 
-    int sum = studentAdd(num1, num2);
-    cout << "The sum of " << num1 << " and " << num2 << " is " << sum << endl;
+    int op;
+    cout << "Enter operation [1: add, 2: subtract, 3: multiply, 4: divide]: ";
+    cin >> op;
+
+    switch (op) {
+        case 1:
+            cout << "Result: " << studentAdd(num1, num2) << endl;
+            break;
+        case 2:
+            cout << "Result: " << studentSubtract(num1, num2) << endl;
+            break;
+        case 3:
+            cout << "Result: " << studentMultiply(num1, num2) << endl;
+            break;
+        case 4:
+            cout << "Result: " << studentInfiniteDivide(num1, num2) << endl;
+            break;
+        default:
+            cout << "Invalid operation" << endl;
+            break;
+    }
 }
 
 void file_mode(string file_name) {
@@ -98,6 +117,6 @@ int main(int argc, char *argv[]) {
     }
 
     cout << "No input file given" << endl;
-    cout << "Defaulting to adding numbers from user input" << endl;
+    cout << "Defaulting to manual input" << endl;
     no_file_mode();
 }
