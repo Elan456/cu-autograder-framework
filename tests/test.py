@@ -119,35 +119,22 @@ class Test02DirectOutputExample(unittest.TestCase):
     code with user input. Test03 shows how to test the functions directly.
     """
 
-    def setUp(self):
-        # Running the student's code with two different inputs,
-        # This relies on the code already being compiled in the `check_compile`
-        # test case to have the `studentMain.out` file
-
-        # Running the student's code with different inputs
-        # The \n simulates the user pressing enter
-        self.run1 = utils.run_program(
-            "./studentMain.out", txt_contents="1\n2\nq\n"
-        )
-        self.run2 = utils.run_program(
-            "./studentMain.out", txt_contents="3\n4\nq\n"
-        )
-
     @number("2.1")
     @weight(1)
     def test_01_intro_output(self):
         """Intro output is correct"""
+
+        run = utils.run_program("./studentMain.out", txt_contents="1\n2\n1\n")
+
         # Checking for certain phrases in the output
         expected_phrases = [
             "Welcome to the calculator program!",
             "No input file given",
-            "Defaulting to adding numbers from user input",
+            "Defaulting to manual input",
         ]
         # Getting which phrases are missing or out-of-order
         # Returns the indexes of the phrases not found
-        out_of_order = utils.phrases_out_of_order(
-            expected_phrases, self.run1.output
-        )
+        out_of_order = utils.phrases_out_of_order(expected_phrases, run.output)
 
         # If a phrase is missing, then you can give a helpful error message
         if len(out_of_order) > 0:
@@ -155,6 +142,16 @@ class Test02DirectOutputExample(unittest.TestCase):
                 "The following phrases are missing or out of order:\n "
                 + "\n".join([expected_phrases[i] for i in out_of_order])
             )
+
+    @number("2.2")
+    @weight(1)
+    def test_2_2_timeout(self):
+        """Timeout test"""
+        # This run should cause a timeout
+        run = utils.run_program("./studentMain.out", txt_contents="1\n2\n4\n")
+
+        if not run.timed_out:
+            raise AssertionError("The program did not timeout as expected")
 
 
 class Test03DirectFunctionExample(unittest.TestCase):

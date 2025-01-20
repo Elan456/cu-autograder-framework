@@ -4,3 +4,4 @@ venv/
 exampleProjectCode/
 utility_testing/
 *__pycache__/
+*.zip
