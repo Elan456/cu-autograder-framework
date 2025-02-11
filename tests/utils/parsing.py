@@ -71,15 +71,38 @@ def find_entities(
     return found_entities
 
 
-def get_cursor_range(cursor: Cursor) -> tuple[int, int]:
+def get_cursor_range(cursor: Cursor, file_contents: str) -> tuple[int, int]:
     """
-    Returns offset position and length of a Cursor in the source file
+    Returns a (start, length) tuple for a Cursor by using its token
+    boundaries, but then adjusts the start offset by verifying the
+    token’s spelling appears in the file contents. This fixes issues
+    where the token’s extent is off (e.g.
+    when removing "int main(){}" the "i" of "int" was left behind).
     """
+    tokens = list(cursor.get_tokens())
+    if not tokens:
+        return (cursor.extent.start.offset, 0)
 
-    start = cursor.extent.start.offset
-    end = cursor.extent.end.offset
+    # Get the first token and its spelling.
+    first_token = tokens[0]
+    token_text = first_token.spelling
+    reported_start = first_token.extent.start.offset
 
-    return (start, end - start)
+    # Check if the token’s spelling is actually at the reported start.
+    # If not, search backwards a little bit.
+    if (
+        file_contents[reported_start : reported_start + len(token_text)]
+        != token_text
+    ):
+        for offset in range(max(0, reported_start - 10), reported_start):
+            if file_contents[offset : offset + len(token_text)] == token_text:
+                reported_start = offset
+                break
+
+    # Use the end offset of the last token.
+    end_offset = tokens[-1].extent.end.offset
+
+    return (reported_start, end_offset - reported_start)
 
 
 def get_direct_include_offsets(tu: TranslationUnit) -> tuple[int, ...]:
@@ -182,26 +205,34 @@ def remove_functions(
     input_filename: str, output_filename: str, *function_names: str
 ) -> None:
     """
-    Remove specified function names from the input file and place in the output
-    file
+    Remove specified functions from the input file and write the result to the
+    output file. This version uses adjusted token boundaries to ensure the
+    entire function (including its declaration keyword) is removed.
     """
-
+    # Parse the file and get the function ranges to remove.
     unit = parse_file(input_filename)
-    function_ranges = get_function_ranges(unit.cursor, False, *function_names)
+    found_functions = find_entities(
+        unit.cursor,
+        False,
+        *((CursorKind.FUNCTION_DECL, func) for func in function_names)
+    )
 
-    contents = []
-    with open(input_filename, "r") as input_file:
-        prev_pos = 0
-        for offset, length in function_ranges:
-            # add file contents excluding function to remove
-            contents.append(input_file.read(offset - prev_pos))
-            input_file.seek(offset + length)
+    # Read the entire file content.
+    with open(input_filename, "r") as f:
+        content = f.read()
 
-            # store new start position (end of removed function)
-            prev_pos = offset + length
+    # Compute the ranges using the file content.
+    function_ranges = [
+        get_cursor_range(func, content) for func in found_functions
+    ]
 
-        # finish reading file contents
-        contents.append(input_file.read())
+    # Remove each function by slicing out its range.
+    # Removing in reverse order avoids shifting offsets.
+    for offset, length in sorted(
+        function_ranges, key=lambda r: r[0], reverse=True
+    ):
+        content = content[:offset] + content[offset + length :]
 
-    with open(output_filename, "w") as output_file:
-        output_file.write("".join(contents))
+    # Write the modified content to the output file.
+    with open(output_filename, "w") as f:
+        f.write(content)

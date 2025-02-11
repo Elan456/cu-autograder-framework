@@ -97,7 +97,6 @@ void file_mode(string file_name) {
     fclose(output);
 }
 
-
 int main(int argc, char *argv[]) {
     cout << "Welcome to the calculator program!" << endl;
     
@@ -119,4 +118,9 @@ int main(int argc, char *argv[]) {
     cout << "No input file given" << endl;
     cout << "Defaulting to manual input" << endl;
     no_file_mode();
+}
+
+
+void say_hello() {
+    cout << "Hello from studentMain.cpp" << endl;
 }
