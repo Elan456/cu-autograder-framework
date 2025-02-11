@@ -277,6 +277,38 @@ class Test03DirectFunctionExample(unittest.TestCase):
             msg += "\nFailed to add integers of different sizes together."
             raise AssertionError(msg)
 
+    @number("3.3")
+    @weight(1)
+    def test_func_in_main_example(self):
+        """Directly calling a function defined in main"""
+
+        # Create a version of the student's main
+        # that doesn't have the main function
+        utils.remove_main("studentMain.cpp", "studentMainNoMain.cpp")
+
+        # Using the no main version of the student's code, we can
+        # call the functions directly
+        # using the exampleMainDriver.cpp
+        compile_errors, sub = utils.compile_and_run(
+            [
+                "g++",
+                "exampleMainDriver.cpp",
+                "studentFuncs.cpp",
+                "-o",
+                "exampleMainDriver.out",
+            ],
+            "exampleMainDriver.out",
+        )
+
+        if compile_errors != "":
+            utils.ta_print("Compile errors in 3.3: " + compile_errors)
+            raise AssertionError("Failed to compile the main driver")
+
+        if "Hello from studentMain.cpp" not in sub.output:
+            raise AssertionError(
+                "Your `say_hello()` function did not print the expected output"
+            )
+
 
 class Test04UsingFileExample(unittest.TestCase):
     """
