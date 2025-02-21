@@ -34,6 +34,7 @@ def run_program(
     input_file: str = None,
     txt_contents: str = None,
     timeout: float = 5,
+    user: str = "student",
 ) -> Submission:
     """
     Run the specified executable as the student user with given input and
@@ -48,6 +49,8 @@ def run_program(
                     Default is `None`.
     timeout -   float specifying how many seconds to wait before terminating
                 the program. Default is None
+    user -      string specifying the user to run the program as. Default is
+                "student"
     """
 
     try:
@@ -75,7 +78,7 @@ def run_program(
             stdout=subprocess.PIPE,
             timeout=timeout,
             input=txt_contents,
-            user="student",
+            user=user,
         )
         timedout = False
 
