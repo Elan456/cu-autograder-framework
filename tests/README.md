@@ -10,13 +10,15 @@ A Python package containing modules with helper functions for testing. More info
 
 ### `drivers`
 
-This is where you should put scripts that are used to test individual functions.   
+This is where you should put scripts that are used to test the student's code.
 They will be copied into the source directory before testing, and will never be given read access to the "student" user.
+For example, if you want to compile a `driver.c` file and run it with the student's code, you would put the `driver.c` file here.
 
 ### `io_files`
 
 Put the files you want the student's code to be able to read and interact with here. Everything here will be copied
 into the source directory before testing and given read access to the "student" user.
+For example, if you want the student's code to read from a file called `input.txt`, you would put that file here.
 
 ## Security
 

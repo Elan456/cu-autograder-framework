@@ -7,6 +7,16 @@ Originally based on the
 [General output-checking autograder example](https://gradescope-autograders.readthedocs.io/en/latest/diff_general/)
 given by Gradescope.
 
+# Features
+
+- 🐍 **Python-Based** – Easy to write, read, and maintain.  
+- 🌍 **Language-Agnostic** – Supports grading for any programming language.  
+- 🛠️ **Modular Utilities** – Pre-built tools for building, running, and managing tests, located in the `utils` directory.  
+- 🔒 **Secure Execution** – Implements safeguards to prevent students from tampering with the autograder, including restricted execution under a dedicated "student" user.  
+- ✅ **Proven Reliability** – Successfully deployed across multiple Clemson University courses.  
+- 🎛️ **Highly Customizable** – Supports user-defined drivers, input files, and unit tests for flexible grading criteria.  
+- 🚀 **Effortless Deployment** – Simply write tests in `tests/test.py` and run `sh zipper.sh` to generate a ready-to-upload zip file for Gradescope.  
+
 # Usage
 1. Download the latest release from the [releases page](https://github.com/Elan456/cu-autograder-framework/releases) 
 or clone the repository
@@ -16,6 +26,14 @@ or clone the repository
 5. Zip up the autograder: `sh zipper.sh` (The name of the zip file can be changed in the `zipper.sh` script)
 6. Upload the autograder to Gradescope
 7. Upload your sample code to Gradescope and see if everything works as expected
+
+## Example Usage  
+This framework is pre-configured as a working autograder for the example sample code in the `example_sample_code` directory. You can use this to test how the autograder works before making modifications.  
+
+1. Run the `zipper.sh` script to generate a zip file for Gradescope.  
+2. Zip the `example_sample_code` directory and upload it to Gradescope as a submission. You should see all test cases pass.  
+3. Modify the `test.py` file inside `example_sample_code` to experiment with different grading behaviors. Many autograding styles are showcased in the file.
+4. Use **"Debug with SSH"** in Gradescope to inspect the environment and troubleshoot any issues.  
 
 ## Files (and what they do)
 
@@ -37,20 +55,26 @@ prior to the autograder running.
 * `zipper.sh` - A small script that zips up the autograder for upload to 
   Gradescope.
 * `example_sample_code/samplecode.zip` - Sample code which should pass
-all the example test cases given in this framework
+all the example test cases given in this framework. Not included in the
+release, but can be used to test the autograder.
 
 ### Tests directory
+
+> **Note:** The `source` directory is the autograder's working directory. All files from the student's submission
+> are copied to it before testing. The files in `drivers` and `io_files` are also copied to it before testing. Any commands ran within the `test.py` file are executed relative to the `source` directory.
 
 
 | Directory        | Use                      | Function                                                                         |
 |------------------|--------------------------|----------------------------------------------------------------------------------|
-| `tests/drivers`  | Store drivers | Copied into the `source` folder **without giving** read access to the "student" user      |
-| `tests/io_files` | Store input files        | Copied into the `source` folder and **granted** read access to the "student" user      |
+| `tests/drivers`  | Store drivers            | Content is copied into the `source` folder **without giving** read access to the "student" user      |
+| `tests/io_files` | Store interaction files        | Content is copied into the `source` folder and **grants** read access to the "student" user          |
 
 * `test.py` - The Python script which compiles, runs, and observes drivers and
   the student's code. Examples are given in the file.
 * `utils` - A Python package that contains custom utilities for the autograder.
   This is where to define functions that are used multiple times in the autograder.
+
+See the [tests README](tests/README.md) for more information on the `tests` directory.
 
 
 # Security
