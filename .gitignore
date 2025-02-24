@@ -5,3 +5,4 @@ exampleProjectCode/
 utility_testing/
 *__pycache__/
 *.zip
+*.out
