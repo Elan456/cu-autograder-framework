@@ -1,6 +1,9 @@
 """
 This is the primary testing file that will hold all the test cases
 that can contribute to the student's score.
+
+Read the tests/README.md file for more information on this file and
+how it works.
 """
 
 import time
@@ -26,7 +29,7 @@ class Test01Setup(unittest.TestCase):
     """
 
     # Files that must be in their submission
-    # They will fail the first test case if they don't have these files
+    # If a file is missing, then they will fail the first test case
     required_files = [
         "studentMain.cpp",
         "studentFuncs.cpp",
@@ -48,14 +51,17 @@ class Test01Setup(unittest.TestCase):
     utils.setup.move_drivers_to_source()
     utils.setup.move_io_files_to_source()
 
-    @number("0.1")  # Does not affect execution order
+    @number(
+        "0.1"
+    )  # Does not affect execution order, what's displayed in Gradescope
     @weight(0)
     def test_01_check_files(self):
         """Expected files are present"""
 
-        # Checking if the required files all exist and
-        # no unexpected files were given
-        # Moves the files into the source directory as well
+        # Checking if the required files all exist in the
+        # submission directory and that no unexpected files were given
+        # Moves the expected files into the source directory
+        # Will raise an exception if an unexpected file is found
         utils.setup.check_and_get_files(
             self.required_files, self.optional_files
         )
@@ -73,11 +79,9 @@ class Test01Setup(unittest.TestCase):
             "studentMain.out"
         ]  # TODO: Add the files that should be created
 
-        # Tries to compile the student's main program
-        # You could use the student's makefile
-        # If all you want to test is individual functions, then you
-        # wouldn't need to do this because you'll be compiling your
-        # own drivers instead
+        # Runs the "make" command as the "student" user
+        # The "student" user has restricted permissions
+        # Collects the errors from running the command
         _, errors = utils.subprocess_run(["make"], "student")
         # Other example:
         # output, errors = utils.subprocess_run(["g++", "main.cpp",
@@ -98,6 +102,9 @@ class Test01Setup(unittest.TestCase):
             msg += ""
             raise AssertionError(msg)
 
+        # After the compilation, we can check if the expected files
+        # were created.
+        # We'll build a message to show the student if any files were missing
         not_found_message = ""
         for file in files_that_should_be_created:
             if not os.path.isfile(os.path.join(os.getcwd(), file)):
@@ -116,7 +123,8 @@ class Test01Setup(unittest.TestCase):
 class Test02DirectOutputExample(unittest.TestCase):
     """
     Collection of test cases to test the direct output of the student's
-    code with user input. Test03 shows how to test the functions directly.
+    code with user input. Test03 shows how to test the functions directly
+    using drivers.
     """
 
     @number("2.1")
@@ -124,6 +132,7 @@ class Test02DirectOutputExample(unittest.TestCase):
     def test_01_intro_output(self):
         """Intro output is correct"""
 
+        # Running the compiled student's code with an input of 1, 2, and 1
         run = utils.run_program("./studentMain.out", txt_contents="1\n2\n1\n")
 
         # Checking for certain phrases in the output
@@ -147,7 +156,9 @@ class Test02DirectOutputExample(unittest.TestCase):
     @weight(1)
     def test_2_2_timeout(self):
         """Timeout test"""
-        # This run should cause a timeout
+        # This run should cause a timeout (the default timeout is 5 seconds)
+        # this series of inputs will trigger a infinite loop in this example
+        # code.
         run = utils.run_program("./studentMain.out", txt_contents="1\n2\n4\n")
 
         if not run.timed_out:
@@ -254,20 +265,30 @@ class Test03DirectFunctionExample(unittest.TestCase):
             "Case 100+500=600 pass",
             "Case 1+1=2 pass",
         ]
+
+        # Getting list of which outputs were not found
+        # e.g. missing = [1, 3] means the second and
+        # fourth outputs were not found
+        missing = utils.phrases_out_of_order(
+            expected_outputs, self.submission.output
+        )
         msg = ""  # Starting with a blank message to build on
-        score = 0
-        for i, expected_output in enumerate(expected_outputs):
-            if expected_output not in self.submission.output:
-                # The first two could be visible while
-                # the last two are hidden
-                if i < 2:
-                    # Giving details about what numbers were used
-                    msg += expected_output.split(" ")[1] + " failed\n"
-                else:
-                    # Not giving details about what numbers were used
-                    msg += "Hidden case failed\n"
+
+        # Calculating the score based on the number of outputs found
+        score = len(expected_outputs) - len(missing)
+        for m in missing:
+            # For the first two cases, we'll give lots of details
+            # For the last two cases, we'll just say that a hidden case
+            # failed
+            # This way, the student can't just hardcode for all 4 cases
+            if m < 2:
+                # Giving details about what numbers were used
+                msg += expected_outputs[m].split(" ")[1] + " failed\n"
             else:
-                score += 1
+                # Not giving details about what numbers were used
+                msg += "Hidden case failed\n"
+        else:
+            score += 1
 
         # The set_score function is passed in by Gradescope
         set_score(score)
@@ -287,7 +308,8 @@ class Test03DirectFunctionExample(unittest.TestCase):
         utils.remove_main("studentMain.cpp", "studentMainNoMain.cpp")
 
         # Using the no main version of the student's code, we can
-        # call the functions directly
+        # call the functions directly while avoiding multiple definitions
+        # of main errors
         # using the exampleMainDriver.cpp
         compile_errors, sub = utils.compile_and_run(
             [
@@ -314,9 +336,9 @@ class Test04UsingFileExample(unittest.TestCase):
     """
     Example of how to test the student's code when they must read from
     a file and also write to a file
-    Must put the input file you want them to use in the drivers folder
+    Must put the input file you want them to use in the io_files folder
 
-    This example uses the `exampleInputFile.txt` in the drivers folder
+    This example uses the `exampleInputFile.txt` in the io_files folder
     """
 
     def setUp(self):
