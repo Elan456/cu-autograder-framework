@@ -287,8 +287,6 @@ class Test03DirectFunctionExample(unittest.TestCase):
             else:
                 # Not giving details about what numbers were used
                 msg += "Hidden case failed\n"
-        else:
-            score += 1
 
         # The set_score function is passed in by Gradescope
         set_score(score)
