@@ -4,4 +4,4 @@
 # SET NAME BELOW 
 name="autograder"
 
-zip -r ../$name.zip . -x ".*" -x "example_sample_code/*" -x "*__pycache__/*" -x "*.zip"
+zip -r ../$name.zip . -x ".*" -x "example_sample_code/*" -x "*__pycache__/*" -x "*.zip" -x ".venv"

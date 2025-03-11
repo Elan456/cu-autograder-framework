@@ -13,6 +13,8 @@ class HintSource(enum.Enum):
     PROJECT_DESCRIPTION = 8
     MISSING_PHRASE = 9
     TIMED_OUT = 10
+    STUDENT_OUTPUT = 11
+    GENERAL = 12
 
 
 class HintElement:
@@ -20,9 +22,9 @@ class HintElement:
         self,
         content: str,
         source: HintSource,
-        context: str = None,
+        context: str = "",
         relevance: float = 1.0,
-        metadata: dict = None,
+        metadata: dict = {},
     ):
         self.content = content
         self.source = source
@@ -31,13 +33,16 @@ class HintElement:
         self.metadata = metadata
 
     def to_dict(self):
-        return {
+        d = {
             "content": self.content,
             "source": self.source.name,
             "context": self.context,
             "relevance": self.relevance,
             "metadata": self.metadata,
         }
+
+        # Make the dict json safe
+        return {k: v for k, v in d.items() if v is not None}
 
     @staticmethod
     def from_dict(data: dict):

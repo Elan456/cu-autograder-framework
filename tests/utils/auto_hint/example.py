@@ -47,7 +47,7 @@ def test_01_intro_output():
 
 
 ah = AutoHint(
-    "https://autohintingwebsite.com",
+    "http://localhost:8081",
     project_directions_path="path/to/directions",
 )
 
@@ -83,6 +83,10 @@ def test_01_intro_output_auto_hint():
 
     run = utils.run_program("example.out", txt_contents="1\n2\n1\n", user=USER)
 
+    ah.add_student_output(
+        run.output, context="This is the student's output from their code"
+    )
+
     if run.timed_out:
         ah.add_timed_out()
 
@@ -92,6 +96,13 @@ def test_01_intro_output_auto_hint():
         "No input file given",
         "Defaulting to manual input",
     ]
+
+    for expected_phrase in expected_phrases:
+        ah.add_sample_output(
+            expected_phrase,
+            context="This is a phrase that should be in the student's output",
+        )
+
     # Getting which phrases are missing or out-of-order
     # Returns the indexes of the phrases not found
     out_of_order = utils.phrases_out_of_order(expected_phrases, run.output)
@@ -100,7 +111,14 @@ def test_01_intro_output_auto_hint():
     if len(out_of_order) > 0:
         print("ooo")
         # Add all the missing phrases to the auto hint
-        [ah.add_missing_phrase(expected_phrases[i]) for i in out_of_order]
+        [
+            ah.add_missing_phrase(
+                expected_phrases[i],
+                context="This phrase couldn't be found in the "
+                "student's output. Are they close to having the right phrase?",
+            )
+            for i in out_of_order
+        ]
         raise AssertionError(ah.gen_hint())
 
 
@@ -114,4 +132,3 @@ if __name__ == "__main__":
         test_01_intro_output_auto_hint()
     except AssertionError as e:
         print(e)
-    print("All tests passed!")

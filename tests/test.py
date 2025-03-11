@@ -10,6 +10,7 @@ import time
 import unittest  # Python's unit testing library
 import os  # For moving files looking inside of folders
 import utils  # Our custom utility package
+from utils.auto_hint import AutoHint
 
 # All of Gradescope's special decorators to modify
 # how the tests are weighted and displayed
@@ -20,6 +21,8 @@ from gradescope_utils.autograder_utils.decorators import (
     partial_credit,
     # leaderboard,
 )
+
+ah = AutoHint("http://18.116.43.74:8081")
 
 
 class Test01Setup(unittest.TestCase):
@@ -129,28 +132,55 @@ class Test02DirectOutputExample(unittest.TestCase):
 
     @number("2.1")
     @weight(1)
-    def test_01_intro_output(self):
+    def test_01_intro_output_auto_hint(self):
         """Intro output is correct"""
 
-        # Running the compiled student's code with an input of 1, 2, and 1
+        ah.reset()
+
+        # Adding the relevant files to the auto hinter
+        ah.add_student_code_file("studentMain.cpp")
+        ah.add_student_code_file("studentFuncs.cpp")
+        ah.add_student_code_file("studentFuncs.h")
+
         run = utils.run_program("./studentMain.out", txt_contents="1\n2\n1\n")
+
+        ah.add_student_output(
+            run.output, context="This is the student's output from their code"
+        )
+
+        if run.timed_out:
+            ah.add_timed_out()
 
         # Checking for certain phrases in the output
         expected_phrases = [
-            "Welcome to the calculator program!",
+            "Welcome to the calculators program!",
             "No input file given",
             "Defaulting to manual input",
         ]
+
+        for expected_phrase in expected_phrases:
+            ah.add_sample_output(
+                expected_phrase,
+                context="This is a phrase that should be"
+                " in the student's output",
+            )
+
         # Getting which phrases are missing or out-of-order
         # Returns the indexes of the phrases not found
         out_of_order = utils.phrases_out_of_order(expected_phrases, run.output)
 
         # If a phrase is missing, then you can give a helpful error message
         if len(out_of_order) > 0:
-            raise AssertionError(
-                "The following phrases are missing or out of order:\n "
-                + "\n".join([expected_phrases[i] for i in out_of_order])
-            )
+            # Add all the missing phrases to the auto hint
+            [
+                ah.add_missing_phrase(
+                    expected_phrases[i],
+                    context="This phrase couldn't be found in the student's"
+                    " output. Are they close to having the right phrase?",
+                )
+                for i in out_of_order
+            ]
+            raise AssertionError(ah.gen_hint())
 
     @number("2.2")
     @weight(1)
@@ -159,10 +189,19 @@ class Test02DirectOutputExample(unittest.TestCase):
         # This run should cause a timeout (the default timeout is 5 seconds)
         # this series of inputs will trigger a infinite loop in this example
         # code.
+        ah.reset()
+        ah.add_student_code_file("studentMain.cpp")
+        ah.add_student_code_file("studentFuncs.cpp")
+        ah.add_student_code_file("studentFuncs.h")
+
         run = utils.run_program("./studentMain.out", txt_contents="1\n2\n4\n")
 
-        if not run.timed_out:
-            raise AssertionError("The program did not timeout as expected")
+        if run.timed_out:
+            ah.add_timed_out(
+                context="The student's code timed out with an input of"
+                " 1, 2, 4, Why did this happen?"
+            )
+            raise AssertionError(ah.gen_hint())
 
 
 class Test03DirectFunctionExample(unittest.TestCase):
