@@ -3,49 +3,7 @@ from .hint_element import HintElement, HintSource
 import json
 import requests
 import datetime
-
-
-"""
-Example CURL to autohinter server:
-
-curl -X POST "18.116.43.74:8081/generate_hint" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "hint_elements": [{
-             "content": "Welcome to the calculators program!",
-             "source": "SAMPLE_CODE",
-             "context": "intro output",
-             "relevance": 1.0,
-             "metadata": null
-            }],
-           "use_knowledge_base": true,
-           "temperature": 0.2,
-           "top_p": 0.7,
-           "max_tokens": 1024,
-           "top_k": 4,
-           "collection_name": "nvidia_blogs",
-           "model": "meta/llama-3.1-70b-instruct",
-           "stop": []
-         }'
-
-
-curl -X POST "http://localhost:8081/generate_hint" \
-     -H "Content-Type: application/json" \
-     -d '{"hint_elements": [{"content": "Welcome to the calculators program!",
-     "source": "MISSING_PHRASE",
-     "context": "", "relevance": 1.0,
-     "metadata": {}}],
-     "use_knowledge_base": false,
-     "temperature": 0.2,
-     "top_p": 0.7,
-     "max_tokens": 1024,
-     "top_k": 4,
-     "collection_name": "nvidia_blogs",
-     "model": "meta/llama-3.1-70b-instruct",
-     "stop": []}'
-
-The response is a series of fastapi StreamingResponse
-"""
+import inspect
 
 
 class AutoHint:
@@ -76,6 +34,9 @@ class AutoHint:
         hint_elements = [
             hint_element.to_dict() for hint_element in self._hint_elements
         ]
+
+        with open("hint_elements.json", "w") as f:
+            json.dump(hint_elements, f, indent=4)
 
         # Build a request to the autohinter server
         request_data = {
@@ -129,6 +90,38 @@ class AutoHint:
     def reset(self):
         self._hint_elements = []
 
+    def add_test_case(self):
+        """
+        Captures the entire function body from which this method is called
+        and stores it as a hint element.
+        """
+        frame = inspect.currentframe().f_back  # Get the caller's frame
+        function_name = frame.f_code.co_name  # Get the function name
+
+        try:
+            # Retrieve the source code of the function
+            source_lines, start_line = inspect.getsourcelines(frame)
+            source_code = "".join(source_lines)
+
+            # Store the function's code as a hint
+            self.add_hint_element(
+                HintElement(
+                    content=function_name,
+                    source=HintSource.TEST_CASE_NAME,
+                    context="Name of the test case that failed",
+                )
+            )
+
+            self.add_hint_element(
+                HintElement(
+                    content=source_code,
+                    source=HintSource.TEST_CASE,
+                    context="Code of the test case that failed",
+                )
+            )
+        except Exception as e:
+            print(f"Failed to retrieve source code: {e}")
+
     def add_hint_element(self, hint_element: HintElement):
         self._hint_elements.append(hint_element)
 
@@ -143,9 +136,18 @@ class AutoHint:
         )
 
     def add_file(self, file_path: str, context: str, **kwargs):
+        context += " from " + file_path
+        metadata = kwargs.get("metadata", {})
+        metadata["file_path"] = file_path
         with open(file_path, "r") as f:
             self.add_hint_element(
-                HintElement(f.read(), HintSource.INPUT_FILE, context, **kwargs)
+                HintElement(
+                    f.read(),
+                    HintSource.FILE,
+                    context,
+                    metadata=metadata,
+                    **kwargs,
+                )
             )
 
     def add_compile_error_message(self, error_message: str, **kwargs):
@@ -156,6 +158,11 @@ class AutoHint:
     def add_missing_phrase(self, phrase: str, **kwargs):
         self.add_hint_element(
             HintElement(phrase, HintSource.MISSING_PHRASE, **kwargs)
+        )
+
+    def add_expected_phrase(self, phrase: str, **kwargs):
+        self.add_hint_element(
+            HintElement(phrase, HintSource.EXPECTED_PHRASE, **kwargs)
         )
 
     def add_function_signature(self, function_signature: str, **kwargs):
@@ -179,3 +186,13 @@ class AutoHint:
 
     def add_timed_out(self, **kwargs):
         self.add_hint_element(HintElement("", HintSource.TIMED_OUT, **kwargs))
+
+    def add_test_user_input(self, user_input: str, **kwargs):
+        self.add_hint_element(
+            HintElement(user_input, HintSource.TEST_USER_INPUT, **kwargs)
+        )
+
+    def add_shell_command(self, command: str, **kwargs):
+        self.add_hint_element(
+            HintElement(command, HintSource.SHELL_COMMAND, **kwargs)
+        )
