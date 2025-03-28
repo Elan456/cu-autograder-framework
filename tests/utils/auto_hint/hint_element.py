@@ -21,6 +21,7 @@ class HintSource(enum.Enum):
     SHELL_COMMAND = 16
     COMPILE_STEP = 17
     FILE = 18
+    FINAL_CONTEXT = 19
 
 
 class HintElement:

@@ -24,11 +24,25 @@ class AutoHint:
 
         self._hint_elements: List[HintElement] = []
 
-    def gen_hint(self):
+    def gen_hint(self, context: str = None) -> str:
         """
         Sends all the hint elements to the AutoHint API and
         returns the response
+
+        :param context: Optional context to be added to the hint elements
+        :return: The generated hint as a string
         """
+
+        if context:
+            self.add_hint_element(
+                HintElement(
+                    context,
+                    HintSource.FINAL_CONTEXT,
+                    "Context given by the autograder developer right before"
+                    " they call the hint generation",
+                    relevant=1,
+                )
+            )
 
         # Convert all hint elements to dictionaries
         hint_elements = [
