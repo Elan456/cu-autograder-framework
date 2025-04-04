@@ -15,6 +15,7 @@ _original_subprocess_run = utils.subprocess_run
 _original_compile_and_run = utils.compile_and_run
 _original_check_and_get_files = utils.setup.check_and_get_files
 _original_phrases_out_of_order = utils.phrases_out_of_order
+_original_check_case_pass = utils.check_case_pass
 
 # Global reference to the current hinter
 _current_hinter = None
@@ -227,6 +228,40 @@ def patched_phrases_out_of_order(*args, **kwargs):
     return result
 
 
+def patched_check_case_pass(*args, **kwargs):
+    # Case name and driver output are the two args
+    """
+    Wrapped version of utils.check_case_pass that logs to the AutoHint.
+    Signature:
+        def check_case_pass(case_name: str, sub_output: str) -> bool
+    """
+
+    ah = get_current_hinter()
+    # If we have a hinter, log the case name and the student's output
+    if ah:
+        case_name = (
+            args[0] if len(args) > 0 and isinstance(args[0], str) else ""
+        )
+        sub_output = (
+            args[1] if len(args) > 1 and isinstance(args[1], str) else ""
+        )
+        ah.add_hint_element(
+            case_name, context="Test case name used by the testing driver"
+        )
+        ah.add_student_output(
+            sub_output, context="Driver output to check for test case"
+        )
+
+    # Actually call the real function
+    result = _original_check_case_pass(*args, **kwargs)
+    # If the test case passed, log that info
+    if ah and result:
+        ah.add_hint_element(
+            case_name, context="Test case passed", relevance=0.5
+        )
+    return result
+
+
 def patch_utils():
     """
     Activates monkey patching by replacing the relevant utils functions
@@ -239,6 +274,7 @@ def patch_utils():
     utils.compile_and_run = patched_compile_and_run
     utils.setup.check_and_get_files = patched_check_and_get_files
     utils.phrases_out_of_order = patched_phrases_out_of_order
+    utils.check_case_pass = patched_check_case_pass
 
 
 def unpatch_utils():
@@ -251,3 +287,4 @@ def unpatch_utils():
     utils.compile_and_run = _original_compile_and_run
     utils.setup.check_and_get_files = _original_check_and_get_files
     utils.phrases_out_of_order = _original_phrases_out_of_order
+    utils.check_case_pass = _original_check_case_pass
