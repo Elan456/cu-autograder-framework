@@ -34,7 +34,7 @@ def autohint(test_func):
         patch_utils()
         try:
             # Call the actual test function with the ah object
-            args = (get_current_hinter(),) + args
+            args = args + (get_current_hinter(),)
             return test_func(*args, **kwargs)
         finally:
             # Unpatch so we restore normal behavior for other tests
