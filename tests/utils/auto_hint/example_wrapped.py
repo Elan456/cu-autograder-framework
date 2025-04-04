@@ -42,24 +42,11 @@ def test_automatic_auto_hinter(ah: AutoHint):
 
     # If a phrase is missing, then you can give a helpful error message
     if len(out_of_order) > 0:
-        ah.gen_hint()
-        raise AssertionError(
-            "The following phrases are missing or out of order:\n "
-            + "\n".join([expected_phrases[i] for i in out_of_order])
-        )
+        hint = ah.gen_hint("Their output is missing at least one phrase.")
+        raise AssertionError(hint)
 
 
 if __name__ == "__main__":
-    # try:
-    #     test_01_intro_output()
-    # except AssertionError as e:
-    #     print(e)
-
-    # try:
-    #     test_01_intro_output_auto_hint()
-    # except AssertionError as e:
-    #     print(e)
-
     try:
         test_automatic_auto_hinter()
     except AssertionError as e:

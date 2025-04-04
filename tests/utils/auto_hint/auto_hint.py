@@ -40,7 +40,7 @@ class AutoHint:
                     HintSource.FINAL_CONTEXT,
                     "Context given by the autograder developer right before"
                     " they call the hint generation",
-                    relevant=1,
+                    relevance=1,
                 )
             )
 
