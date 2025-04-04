@@ -15,6 +15,7 @@ from .driver_running import (
     Submission,
     compile_and_run,
     remove_main,
+    check_case_pass,
 )
 from .stdout_checking import phrases_out_of_order, check_phrases
 

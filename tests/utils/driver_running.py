@@ -175,3 +175,24 @@ def compile_and_run(
         submission = None
 
     return compilation_errors, submission
+
+
+def check_case_pass(case_name: str, sub_output: str) -> bool:
+    """
+    :param case_name    The name of the case to be checked for
+    :param sub_output   A string which may have:
+                        "Case <case_name> pass" OR "Case <case_name> fail"
+
+    :returns True when they pass, False when they fail
+
+    Checks that the 'Case <case_name> pass' is in the string and that
+    'Case <case_name> fail' is not in the string. This prevents students from
+    simply printing out '<case_name> pass' to avoid neededing to actually pass
+    the autograder's tests. Previous methods only checked for the prescense of
+    'Case <case_name> pass' regardless of if the actual autograder said
+    'Case <case_name> fail'
+    """
+    return (
+        f"Case {case_name} pass" in sub_output
+        and f"Case {case_name} fail" not in sub_output
+    )
