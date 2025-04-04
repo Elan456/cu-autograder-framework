@@ -8,6 +8,7 @@ into the AutoHint object automatically.
 
 import utils
 from utils.auto_hint import AutoHint
+from utils.auto_hint import HintElement, HintSource
 
 # Keep references to the original, unpatched functions
 _original_run_program = utils.run_program
@@ -246,7 +247,11 @@ def patched_check_case_pass(*args, **kwargs):
             args[1] if len(args) > 1 and isinstance(args[1], str) else ""
         )
         ah.add_hint_element(
-            case_name, context="Test case name used by the testing driver"
+            HintElement(
+                case_name,
+                HintSource.TEST_CASE_NAME,
+                context="Test case name used by the driver",
+            ),
         )
         ah.add_student_output(
             sub_output, context="Driver output to check for test case"
@@ -257,7 +262,11 @@ def patched_check_case_pass(*args, **kwargs):
     # If the test case passed, log that info
     if ah and result:
         ah.add_hint_element(
-            case_name, context="Test case passed", relevance=0.5
+            HintElement(
+                case_name,
+                HintSource.STUDENT_OUTPUT,
+                context="Test case passed in the driver",
+            )
         )
     return result
 
