@@ -30,9 +30,9 @@ or clone the repository
 ## Example Usage  
 This framework is pre-configured as a working autograder for the example sample code in the `example_sample_code` directory. You can use this to test how the autograder works before making modifications.  
 
-1. Run the `zipper.sh` script to generate a zip file for Gradescope.  
+1. Run the `zipper.sh` script to generate a zip file of the autograder for Gradescope.  
 2. Zip the `example_sample_code` directory and upload it to Gradescope as a submission. You should see all test cases pass.  
-3. Modify the `test.py` file inside `example_sample_code` to experiment with different grading behaviors. Many autograding styles are showcased in the file.
+3. Modify the `test.py` file to experiment with different grading behaviors. Many autograding styles are showcased in the file.
 4. Use **"Debug with SSH"** in Gradescope to inspect the environment and troubleshoot any issues.  
 
 ## Files (and what they do)
