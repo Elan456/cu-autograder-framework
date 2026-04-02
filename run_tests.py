@@ -11,10 +11,44 @@ Gradescope
 import unittest
 from gradescope_utils.autograder_utils.json_test_runner import JSONTestRunner
 
+
+SETUP_CLASS_NAME = "Test01Setup"
+
+
+def _iter_test_cases(suite):
+    """Yield concrete test cases from a potentially nested suite."""
+    for test in suite:
+        if isinstance(test, unittest.TestSuite):
+            yield from _iter_test_cases(test)
+        else:
+            yield test
+
+
+def _prioritize_setup_suite(discovered_suite):
+    """
+    Move tests from Test01Setup to the front while preserving
+    relative order for all tests.
+    """
+    setup_tests = []
+    other_tests = []
+
+    for test in _iter_test_cases(discovered_suite):
+        if test.__class__.__name__ == SETUP_CLASS_NAME:
+            setup_tests.append(test)
+        else:
+            other_tests.append(test)
+
+    ordered_suite = unittest.TestSuite()
+    ordered_suite.addTests(setup_tests)
+    ordered_suite.addTests(other_tests)
+    return ordered_suite
+
+
 # This will run any testing scripts it can find and then writes all the results
 # to the results.json
 if __name__ == "__main__":
-    suite = unittest.defaultTestLoader.discover("tests")
+    discovered_suite = unittest.defaultTestLoader.discover("tests")
+    suite = _prioritize_setup_suite(discovered_suite)
     with open("/autograder/results/results.json", "w", encoding="utf-8") as f:
         JSONTestRunner(visibility="visible", stream=f).run(suite)
 
