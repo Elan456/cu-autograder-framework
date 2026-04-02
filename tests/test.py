@@ -26,6 +26,14 @@ class Test01Setup(unittest.TestCase):
     """
     Collection of test cases used to check and move files into the correct
     location and compile the main executable.
+
+    Test case classes and the test cases within them are run in alphabetical
+    order, so use a naming scheme like Test01, Test02, etc. to control the
+    flow of the tests.
+
+    However, the class named `Test01Setup` is specifically prioritized in
+    run_tests.py, so it will always run first regardless of alphabetical
+    order.
     """
 
     # Files that must be in their submission
